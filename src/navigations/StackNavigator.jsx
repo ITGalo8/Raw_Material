@@ -4,6 +4,8 @@ import LoginScreen from '../screens/LoginScreen';
 import Dashboard from '../screens/Dashboard';
 import TabNavigator from './TabNavigator';
 import Repair from '../screens/Repair';
+import AddItem from '../screens/AddItem';
+import AddSubItemName from '../screens/AddSubItemName';
 
 
 const Stack = createStackNavigator();
@@ -22,6 +24,12 @@ const StackNavigator = () => {
 
       <Stack.Screen name="Repair" component={Repair}
       options={{title: 'Repair', headerShown: false }} />
+
+     <Stack.Screen name="AddItem" component={AddItem}
+      options={{title: 'AddItem', headerShown: false }} />
+
+      <Stack.Screen name="AddSubItemName" component={AddSubItemName}
+      options={{title: 'AddSubItemName', headerShown: false }} />
      
     </Stack.Navigator>
   );
