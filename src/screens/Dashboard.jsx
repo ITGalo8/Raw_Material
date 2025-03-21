@@ -204,7 +204,7 @@ const Dashboard = ({ navigation }) => {
     { 
       icon: <MaterialIcons name="list" size={20} color="black" />, 
       title: 'BOM', 
-      onPress: () => navigation.navigate('BOM'),
+      onPress: () => navigation.navigate('Bom'),
     },
     { 
       icon: <MaterialIcons name="history" size={20} color="black" />, 

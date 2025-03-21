@@ -6,6 +6,7 @@ import TabNavigator from './TabNavigator';
 import Repair from '../screens/Repair';
 import AddItem from '../screens/AddItem';
 import AddSubItemName from '../screens/AddSubItemName';
+import Bom from '../screens/Bom';
 
 
 const Stack = createStackNavigator();
@@ -30,6 +31,9 @@ const StackNavigator = () => {
 
       <Stack.Screen name="AddSubItemName" component={AddSubItemName}
       options={{title: 'AddSubItemName', headerShown: false }} />
+
+     <Stack.Screen name="Bom" component={Bom}
+      options={{title: 'Bom', headerShown: false }} />
      
     </Stack.Navigator>
   );
