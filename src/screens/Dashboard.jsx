@@ -156,6 +156,7 @@ import Card from '../components/card';
 import Sidebar from '../components/Modal';
 import axios from 'axios';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Logout from './Logout';
 
 const Dashboard = ({ navigation }) => {
   const [data, setData] = useState(null);
@@ -227,6 +228,7 @@ const Dashboard = ({ navigation }) => {
           <Text style={styles.headerText}>RMS ADMIN</Text>
         </View>
         <Sidebar menuItems={menuItems} navigation={navigation} />
+        <Logout/>
       </View>
 
       <View style={styles.cardContainer}>
@@ -239,7 +241,7 @@ const Dashboard = ({ navigation }) => {
           <Card backgroundColor="#868b8e" title="Stock" content="Total Defective" quantity={data?.stockDefective} />
         </ScrollView>
       </View>
-    </View>
+    </View>  
   );
 };
 
@@ -250,7 +252,7 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: '#189ab4',
     padding: 40,
-    paddingTop: 64,
+    paddingTop: 50,
   },
   logoContainer: {
     flexDirection: 'row',

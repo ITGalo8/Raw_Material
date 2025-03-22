@@ -598,17 +598,7 @@ const Repair = () => {
 };
 
 const styles = StyleSheet.create({
-//   container: { flex: 1, backgroundColor: '#f4f4f8', padding: 20 },
-//   heading: { fontSize: 20, fontWeight: 'bold', textAlign: 'center', marginVertical: 20 },
-//   label: { fontSize: 16, marginBottom: 10, fontWeight: 'bold' },
-//   picker: { height: 50, backgroundColor: '#fff', marginBottom: 20, borderRadius: 8, borderWidth: 1, paddingHorizontal: 10 },
-//   button: { backgroundColor: '#070604', padding: 12, borderRadius: 8, alignItems: 'center' },
-//   buttonText: { color: '#fbd33b', fontSize: 16, fontWeight: '600' },
 
-//       textArea: {
-//     minHeight: 80,
-//   },
-// });
 
   container: {flex: 1, backgroundColor: '#f4f4f8', padding: 50},
   label: {fontSize: 18, marginBottom: 10, fontWeight: 'bold', color: '#333'},

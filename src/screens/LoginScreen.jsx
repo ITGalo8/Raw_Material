@@ -3,28 +3,32 @@ import React, { useState } from 'react';
 import Button from '../components/Button';
 import axios from 'axios';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-
-const API_URL = 'https://your-api-url.com';
+import {useNavigation} from '@react-navigation/native';
+import Dashboard from './Dashboard';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(true);
   const [loading, setLoading] = useState(false);
+  const navigation = useNavigation();
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await axios.post(`${API_URL}/user/login`, {
+      const response = await axios.post(`http://88.222.214.93:5050/auth/login`, {
         email,
         password,
+        roleId: '8290551b-9d0c-4005-91a8-abe6c841ae4d',
       });
       Alert.alert('Success', 'Successfully Logged In');
+      navigation.navigate("Dashboard")
     } catch (error) {
       Alert.alert('Error', error?.response?.data?.message || 'Check Login Credentials!');
     }
     setLoading(false);
   };
+  
 
   const handleSubmit = () => {
     console.log('Login button clicked');
@@ -107,7 +111,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 5,
-    marginBottom: 20
+    // marginBottom: 20
   },
   inputWithIcon: {
     flexDirection: 'row',

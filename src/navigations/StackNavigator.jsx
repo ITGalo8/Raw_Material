@@ -7,14 +7,15 @@ import Repair from '../screens/Repair';
 import AddItem from '../screens/AddItem';
 import AddSubItemName from '../screens/AddSubItemName';
 import Bom from '../screens/Bom';
+import Logout from '../screens/Logout';
 
 
 const Stack = createStackNavigator();
 
 const StackNavigator = () => {
   return (
-    <Stack.Navigator initialRouteName='Login'>
-      <Stack.Screen name="Login" component={Dashboard}
+    <Stack.Navigator initialRouteName='LoginScreen'>
+      <Stack.Screen name="LoginScreen" component={LoginScreen}
       options={{title: 'LoginPage', headerShown: false}} />
 
       <Stack.Screen name="Dashboard" component={Dashboard}
@@ -34,6 +35,9 @@ const StackNavigator = () => {
 
      <Stack.Screen name="Bom" component={Bom}
       options={{title: 'Bom', headerShown: false }} />
+
+     <Stack.Screen name="Logout" component={Logout}
+      options={{title: 'Logout', headerShown: false }} />
      
     </Stack.Navigator>
   );
