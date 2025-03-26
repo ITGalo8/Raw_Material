@@ -8,6 +8,7 @@ import AddItem from '../screens/AddItem';
 import AddSubItemName from '../screens/AddSubItemName';
 import Bom from '../screens/Bom';
 import Logout from '../screens/Logout';
+import AllDefectiveData from '../screens/AllDefectiveData';
 
 
 const Stack = createStackNavigator();
@@ -38,6 +39,9 @@ const StackNavigator = () => {
 
      <Stack.Screen name="Logout" component={Logout}
       options={{title: 'Logout', headerShown: false }} />
+
+     <Stack.Screen name="AllDefectiveData" component={AllDefectiveData}
+      options={{title: 'AllDefectiveData', headerShown: false }} />
      
     </Stack.Navigator>
   );
