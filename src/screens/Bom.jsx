@@ -1,92 +1,69 @@
-// import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
-// import React from 'react';
-
-// const { width } = Dimensions.get('window');
-
-// const Bom = () => {
-//   const items = [
-//     { name: 'Motor', color: '#FFA07A' },
-//     { name: 'Pump', color: '#98FB98' },
-//     { name: 'Controller', color: '#87CEEB' },
-//   ];
-
-//   return (
-//     <View style={styles.container}>
-//       <Text style={styles.heading}>BOM (Bill of material)</Text>
-//       {items.map((item, index) => (
-//         <TouchableOpacity key={index} style={[styles.card, { backgroundColor: item.color }]}>
-//           <Text style={styles.cardText}>{item.name}</Text>
-//         </TouchableOpacity>
-//       ))}
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: '#f4f4f4',
-//     marginLeft: 40,
-//     paddingTop: 50
-//   },
-//   card: {
-//     width: width * 0.8,
-//     marginVertical: 20,
-//     paddingVertical: 30,
-//     borderRadius: 10,
-//     elevation: 20,
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//   },
-
-//   heading: {
-//     fontSize: 20,
-//     fontWeight: 'bold',
-//     textAlign: 'center',
-//     marginVertical: 20,
-//     color: '#070604',
-//   },
-//   cardText: {
-//     fontSize: 18,
-//     fontWeight: 'bold',
-//     color: '#333',
-//   },
-// });
-
-// export default Bom;
-
-
-
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
-import React from 'react';
-import { useNavigation } from '@react-navigation/native';
+import { View, Text, StyleSheet, Dimensions, ActivityIndicator, FlatList } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import RNPickerSelect from 'react-native-picker-select';
 
 const { width } = Dimensions.get('window');
 
 const Bom = () => {
-  const navigation = useNavigation();
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [itemData, setItemData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const items = [
-    { name: 'Motor', color: '#FFA07A' },
-    { name: 'Pump', color: '#98FB98' },
-    { name: 'Controller', color: '#87CEEB' },
+    { label: 'Motor', value: 'Motor' },
+    { label: 'Pump', value: 'Pump' },
+    { label: 'Controller', value: 'Controller' },
   ];
 
-  const handleBack = () => {
-    navigation.goBack(); // Navigates back to the previous screen
+  useEffect(() => {
+    if (selectedItem) {
+      fetchData(selectedItem);
+    } else {
+      setItemData([]); // Clear data if no item is selected
+    }
+  }, [selectedItem]);
+
+  const fetchData = async (itemName) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`http://88.222.214.93:5050/admin/getItemsByName?searchQuery=${itemName}`);
+      const data = await response.json();
+      setItemData(data.data || []); // Extract `data` array from response
+    } catch (err) {
+      setError('Failed to fetch data');
+    }
+    setLoading(false);
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>BOM (Bill of Material)</Text>
-      {items.map((item, index) => (
-        <TouchableOpacity key={index} style={[styles.card, { backgroundColor: item.color }]}>
-          <Text style={styles.cardText}>{item.name}</Text>
-        </TouchableOpacity>
-      ))}
-      <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-        <Text style={styles.backButtonText}>Back</Text>
-      </TouchableOpacity>
+
+      <View style={styles.dropdownContainer}>
+        <RNPickerSelect
+          onValueChange={(value) => setSelectedItem(value)}
+          items={items}
+          placeholder={{ label: 'Select an item...', value: null }}
+          style={pickerSelectStyles}
+        />
+      </View>
+
+      {loading && <ActivityIndicator size="large" color="#0000ff" />}
+      {error && <Text style={styles.errorText}>{error}</Text>}
+
+      {itemData.length > 0 && (
+        <FlatList
+          data={itemData}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <View style={styles.card}>
+              <Text style={styles.cardText}>{item.name}</Text>
+            </View>
+          )}
+        />
+      )}
     </View>
   );
 };
@@ -95,44 +72,58 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f4f4f4',
-    marginLeft: 40,
     paddingTop: 50,
-  },
-  card: {
-    width: width * 0.8,
-    marginVertical: 20,
-    paddingVertical: 30,
-    borderRadius: 10,
-    elevation: 20,
     alignItems: 'center',
-    justifyContent: 'center',
   },
   heading: {
     fontSize: 20,
     fontWeight: 'bold',
-    textAlign: 'center',
-    marginVertical: 20,
+    marginBottom: 20,
     color: '#070604',
   },
+  dropdownContainer: {
+    width: width * 0.8,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 10,
+    elevation: 5,
+  },
+  card: {
+    marginTop: 10,
+    padding: 15,
+    backgroundColor: '#ddd',
+    borderRadius: 10,
+    width: width * 0.8,
+    alignItems: 'center',
+  },
   cardText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#333',
   },
-  backButton: {
-    marginTop: 30,
-    backgroundColor: '#333',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    width: width * 0.6,
-    alignSelf: 'center',
-  },
-  backButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+  errorText: {
+    color: 'red',
+    marginTop: 10,
   },
 });
+
+const pickerSelectStyles = {
+  inputIOS: {
+    fontSize: 16,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    color: 'black',
+  },
+  inputAndroid: {
+    fontSize: 16,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    color: 'black',
+  },
+};
 
 export default Bom;
