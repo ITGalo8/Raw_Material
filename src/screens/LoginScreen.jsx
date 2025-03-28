@@ -1,10 +1,19 @@
-import { View, Text, StyleSheet, Alert, Image, TextInput, TouchableOpacity } from 'react-native';
-import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Alert,
+  Image,
+  TextInput,
+  TouchableOpacity,
+} from 'react-native';
+import React, {useState} from 'react';
 import Button from '../components/Button';
 import axios from 'axios';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useNavigation} from '@react-navigation/native';
 import Dashboard from './Dashboard';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
@@ -16,19 +25,30 @@ const LoginScreen = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await axios.post(`http://88.222.214.93:5050/auth/login`, {
-        email,
-        password,
-        roleId: '8290551b-9d0c-4005-91a8-abe6c841ae4d',
-      });
+      const response = await axios.post(
+        `http://88.222.214.93:5050/auth/login`,
+        {
+          email,
+          password,
+          roleId: '8290551b-9d0c-4005-91a8-abe6c841ae4d',
+        },
+      );
+
+      await AsyncStorage.setItem(
+        'userData',
+        JSON.stringify(response.data.data),
+      );
+
       Alert.alert('Success', 'Successfully Logged In');
-      navigation.navigate("Dashboard")
+      navigation.navigate('Dashboard');
     } catch (error) {
-      Alert.alert('Error', error?.response?.data?.message || 'Check Login Credentials!');
+      Alert.alert(
+        'Error',
+        error?.response?.data?.message || 'Check Login Credentials!',
+      );
     }
     setLoading(false);
   };
-  
 
   const handleSubmit = () => {
     console.log('Login button clicked');
@@ -41,9 +61,14 @@ const LoginScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Image source={require('../assets/images/Galo.png')} style={styles.image} />
+      <Image
+        source={require('../assets/images/Galo.png')}
+        style={styles.image}
+      />
       <Text style={styles.textheading}>Welcome Back!</Text>
-      <Text style={styles.title}>We are happy to see you again. Please enter your Email and Password.</Text>
+      <Text style={styles.title}>
+        We are happy to see you again. Please enter your Email and Password.
+      </Text>
 
       <Text style={styles.header}>Email</Text>
       <View style={styles.inputWithIcon}>
@@ -76,10 +101,18 @@ const LoginScreen = () => {
           placeholderTextColor={'#888'}
         />
         <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-          <Icon name={showPassword ? 'visibility-off' : 'visibility'} size={24} color="gray" />
+          <Icon
+            name={showPassword ? 'visibility-off' : 'visibility'}
+            size={24}
+            color="gray"
+          />
         </TouchableOpacity>
       </View>
-      <Button title={loading ? 'Logging in...' : 'Login'} onPress={handleSubmit} disabled={loading} />
+      <Button
+        title={loading ? 'Logging in...' : 'Login'}
+        onPress={handleSubmit}
+        disabled={loading}
+      />
     </View>
   );
 };
@@ -131,10 +164,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 
-  forget:{
-    marginLeft: 270
-
-  }
+  forget: {
+    marginLeft: 270,
+  },
 });
 
 export default LoginScreen;

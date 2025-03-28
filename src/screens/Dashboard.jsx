@@ -48,6 +48,12 @@ const Dashboard = ({navigation}) => {
   }
 
   const menuItems = [
+
+    {
+      icon: <MaterialIcons name="store" size={20} color="black" />,
+      title: 'Stock',
+      onPress: () => navigation.navigate('Stock'),
+    },
     {
       icon: <MaterialIcons name="add-box" size={20} color="black" />,
       title: 'AddItem',
@@ -83,6 +89,14 @@ const Dashboard = ({navigation}) => {
       title: 'Reject History',
       onPress: () => navigation.navigate('RejectHistory'),
     },
+
+    {
+      icon: <MaterialIcons name="history-toggle-off" size={20} color="black" />,
+      title: 'UpdateStockMaterial',
+      onPress: () => navigation.navigate('UpdateStockMaterial'),
+    },
+
+    
   ];
 
   return (

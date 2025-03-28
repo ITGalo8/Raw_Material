@@ -9,6 +9,8 @@ import AddSubItemName from '../screens/AddSubItemName';
 import Bom from '../screens/Bom';
 import Logout from '../screens/Logout';
 import AllDefectiveData from '../screens/AllDefectiveData';
+import Stock from '../screens/Stock';
+import UpdateStockMaterial from '../screens/UpdateStockMaterial';
 
 
 const Stack = createStackNavigator();
@@ -21,6 +23,9 @@ const StackNavigator = () => {
 
       <Stack.Screen name="Dashboard" component={Dashboard}
       options={{title: 'Dashboard', headerShown: false }} />
+
+     <Stack.Screen name="Stock" component={Stock}
+      options={{title: 'Stock', headerShown: false }} />
 
       <Stack.Screen name="TabNavigator" component={TabNavigator}
       options={{title: 'TabNavigator', headerShown: false }} />
@@ -42,6 +47,11 @@ const StackNavigator = () => {
 
      <Stack.Screen name="AllDefectiveData" component={AllDefectiveData}
       options={{title: 'AllDefectiveData', headerShown: false }} />
+
+      <Stack.Screen name="UpdateStockMaterial" component={UpdateStockMaterial}
+      options={{title: 'UpdateStockMaterial', headerShown: false }} />
+
+
      
     </Stack.Navigator>
   );
