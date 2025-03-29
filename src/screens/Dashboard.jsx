@@ -51,7 +51,7 @@ const Dashboard = ({navigation}) => {
 
     {
       icon: <MaterialIcons name="store" size={20} color="black" />,
-      title: 'Stock',
+      title: 'Bom Stock',
       onPress: () => navigation.navigate('Stock'),
     },
     {
@@ -89,14 +89,6 @@ const Dashboard = ({navigation}) => {
       title: 'Reject History',
       onPress: () => navigation.navigate('RejectHistory'),
     },
-
-    {
-      icon: <MaterialIcons name="history-toggle-off" size={20} color="black" />,
-      title: 'UpdateStockMaterial',
-      onPress: () => navigation.navigate('UpdateStockMaterial'),
-    },
-
-    
   ];
 
   return (

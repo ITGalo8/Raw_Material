@@ -1,20 +1,28 @@
-import { View, Text, StyleSheet, Dimensions, ActivityIndicator, FlatList, TouchableOpacity } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  ActivityIndicator,
+  FlatList,
+} from 'react-native';
+import React, {useState, useEffect} from 'react';
 import RNPickerSelect from 'react-native-picker-select';
 
-const { width } = Dimensions.get('window');
+const {width} = Dimensions.get('window');
 
 const Bom = () => {
   const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedItemId, setSelectedItemId] = useState(null);
   const [itemData, setItemData] = useState([]);
   const [rawMaterials, setRawMaterials] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const items = [
-    { label: 'Motor', value: 'Motor' },
-    { label: 'Pump', value: 'Pump' },
-    { label: 'Controller', value: 'Controller' },
+    {label: 'Motor', value: 'Motor'},
+    {label: 'Pump', value: 'Pump'},
+    {label: 'Controller', value: 'Controller'},
   ];
 
   useEffect(() => {
@@ -26,11 +34,13 @@ const Bom = () => {
     }
   }, [selectedItem]);
 
-  const fetchData = async (itemName) => {
+  const fetchData = async itemName => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`http://88.222.214.93:5050/admin/getItemsByName?searchQuery=${itemName}`);
+      const response = await fetch(
+        `http://88.222.214.93:5050/admin/getItemsByName?searchQuery=${itemName}`,
+      );
       const data = await response.json();
       setItemData(data.data || []);
     } catch (err) {
@@ -39,10 +49,12 @@ const Bom = () => {
     setLoading(false);
   };
 
-  const fetchRawMaterials = async (itemId) => {
+  const fetchRawMaterials = async itemId => {
     setLoading(true);
     try {
-      const response = await fetch(`http://88.222.214.93:5050/admin/getRawMaterialsByItemId?itemId=${itemId}`);
+      const response = await fetch(
+        `http://88.222.214.93:5050/admin/getRawMaterialsByItemId?itemId=${itemId}`,
+      );
       const data = await response.json();
       setRawMaterials(data.data || []);
     } catch (err) {
@@ -54,11 +66,15 @@ const Bom = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>BOM (Bill of Material)</Text>
+
       <View style={styles.dropdownContainer}>
         <RNPickerSelect
-          onValueChange={(value) => setSelectedItem(value)}
+          onValueChange={value => {
+            setSelectedItem(value);
+            setSelectedItemId(null);
+          }}
           items={items}
-          placeholder={{ label: 'Select an item...', value: null }}
+          placeholder={{label: 'Select an item...', value: null}}
           style={pickerSelectStyles}
         />
       </View>
@@ -66,26 +82,47 @@ const Bom = () => {
       {loading && <ActivityIndicator size="large" color="#0000ff" />}
       {error && <Text style={styles.errorText}>{error}</Text>}
 
-      <FlatList
-        data={itemData}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TouchableOpacity style={styles.card} onPress={() => fetchRawMaterials(item.id)}>
-            <Text style={styles.cardText}>{item.name}</Text>
-          </TouchableOpacity>
-        )}
-      />
-      
+      {itemData.length > 0 && (
+        <View style={styles.dropdownContainer}>
+          <RNPickerSelect
+            onValueChange={value => {
+              setSelectedItemId(value);
+              fetchRawMaterials(value);
+            }}
+            items={itemData.map(item => ({
+              label: item.name,
+              value: item.id,
+            }))}
+            placeholder={{label: 'Select an item...', value: null}}
+            style={pickerSelectStyles}
+          />
+        </View>
+      )}
+
       {rawMaterials.length > 0 && (
         <View style={styles.materialContainer}>
           <Text style={styles.subHeading}>Raw Materials</Text>
-          
+
+          <View style={styles.tableHeader}>
+            <Text style={[styles.tableHeaderText, styles.columnName]}>
+              Material Name
+            </Text>
+            <Text style={[styles.tableHeaderText, styles.columnQuantity]}>
+              Quantity
+            </Text>
+          </View>
+
           <FlatList
             data={rawMaterials}
             keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => (
-              <View style={styles.materialCard}>
-                <Text style={styles.cardText}>{item.rawMaterial.name} - {item.quantity}</Text>
+            renderItem={({item}) => (
+              <View style={styles.tableRow}>
+                <Text style={[styles.tableCell, styles.columnName]}>
+                  {item.rawMaterial.name}
+                </Text>
+                <Text style={[styles.tableCell, styles.columnQuantity]}>
+                  {item.quantity}
+                </Text>
               </View>
             )}
           />
@@ -101,7 +138,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#f4f4f4',
     paddingTop: 50,
     alignItems: 'center',
-   
   },
   heading: {
     fontSize: 20,
@@ -112,8 +148,9 @@ const styles = StyleSheet.create({
   subHeading: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginTop: 20,
+    marginBottom: 10,
     color: '#333',
+    textAlign: 'center',
   },
   dropdownContainer: {
     width: width * 0.8,
@@ -121,30 +158,45 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     elevation: 5,
-  },
-  card: {
-    marginTop: 10,
-    padding: 15,
-    backgroundColor: '#ddd',
-    borderRadius: 10,
-    width: width * 0.8,
-    alignItems: 'center',
+    marginBottom: 10,
   },
   materialContainer: {
     marginTop: 20,
-    width: width * 0.8,
-    marginBottom: 200,
-  },
-  materialCard: {
-    marginTop: 5,
+    width: width * 0.9,
+    marginBottom: 20,
+    backgroundColor: '#fff',
+    borderRadius: 10,
     padding: 10,
-    backgroundColor: '#eee',
-    borderRadius: 8,
+    elevation: 3,
   },
-  cardText: {
+  tableHeader: {
+    flexDirection: 'row',
+    backgroundColor: '#000',
+    paddingVertical: 10,
+    borderRadius: 5,
+  },
+  tableHeaderText: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: '#fff',
+    textAlign: 'center',
+  },
+  tableRow: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    paddingVertical: 10,
+  },
+  tableCell: {
+    fontSize: 16,
     color: '#333',
+    textAlign: 'center',
+  },
+  columnName: {
+    flex: 2,
+  },
+  columnQuantity: {
+    flex: 1,
   },
   errorText: {
     color: 'red',
