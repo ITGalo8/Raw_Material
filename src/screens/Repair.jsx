@@ -213,8 +213,7 @@
 
 // export default Repair;
 
-
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -223,11 +222,11 @@ import {
   Alert,
   TextInput,
   TouchableOpacity,
-  Picker,
   Keyboard,
   TouchableWithoutFeedback,
 } from 'react-native';
 import axios from 'axios';
+import {Picker} from '@react-native-picker/picker';
 
 const Repair = () => {
   const [selectedItem, setSelectedItem] = useState(null);
@@ -242,9 +241,9 @@ const Repair = () => {
   const [error, setError] = useState(null);
 
   const items = [
-    { label: 'Motor', value: 'Motor' },
-    { label: 'Pump', value: 'Pump' },
-    { label: 'Controller', value: 'Controller' },
+    {label: 'Motor', value: 'Motor'},
+    {label: 'Pump', value: 'Pump'},
+    {label: 'Controller', value: 'Controller'},
   ];
 
   useEffect(() => {
@@ -255,12 +254,12 @@ const Repair = () => {
     }
   }, [selectedItem]);
 
-  const fetchData = async (itemName) => {
+  const fetchData = async itemName => {
     setLoading(true);
     setError(null);
     try {
       const response = await axios.get(
-        `http://88.222.214.93:5050/admin/getItemsByName?searchQuery=${itemName}`
+        `http://88.222.214.93:5050/admin/getItemsByName?searchQuery=${itemName}`,
       );
       setItemData(response.data.data || []);
     } catch (err) {
@@ -272,7 +271,11 @@ const Repair = () => {
   const handleSubmit = async () => {
     Keyboard.dismiss();
 
-    if (!selectedItem || !selectedValue || (selectedValue === 'other' && !faultAnalysis)) {
+    if (
+      !selectedItem ||
+      !selectedValue ||
+      (selectedValue === 'other' && !faultAnalysis)
+    ) {
       Alert.alert('Error', 'Please fill all the required fields.');
       return;
     }
@@ -291,26 +294,18 @@ const Repair = () => {
       setLoading(true);
       const response = await axios.post(
         'http://88.222.214.93/warehouse-admin/reject-item',
-        newItem
+        newItem,
       );
       Alert.alert('Success', 'Item repair data has been submitted.');
-      resetForm();
     } catch (error) {
       console.error('Error:', error);
-      Alert.alert('Error', error.response?.data?.message || 'Something went wrong.');
+      Alert.alert(
+        'Error',
+        error.response?.data?.message || 'Something went wrong.',
+      );
     } finally {
       setLoading(false);
     }
-  };
-
-  const resetForm = () => {
-    setSelectedItem(null);
-    setQuantity('');
-    setSerialNumber('');
-    setRepairedBy('');
-    setRemark('');
-    setFaultAnalysis('');
-    setSelectedValue('');
   };
 
   return (
@@ -319,7 +314,10 @@ const Repair = () => {
         <Text style={styles.heading}>Repair Data</Text>
 
         <Text style={styles.label}>Select Item Type:</Text>
-        <Picker selectedValue={selectedItem} onValueChange={setSelectedItem} style={styles.picker}>
+        <Picker
+          selectedValue={selectedItem}
+          onValueChange={setSelectedItem}
+          style={styles.picker}>
           <Picker.Item label="-- Select Item --" value={null} />
           {items.map((item, index) => (
             <Picker.Item key={index} label={item.label} value={item.value} />
@@ -343,15 +341,33 @@ const Repair = () => {
         )}
 
         <Text style={styles.label}>Fault Analysis:</Text>
-        <Picker selectedValue={selectedValue} onValueChange={setSelectedValue} style={styles.input}>
-          <Picker.Item label="Controller IGBT Issue" value="Controller IGBT Issue" />
-          <Picker.Item label="Controller Display Issue" value="Controller Display Issue" />
+        <Picker
+          selectedValue={selectedValue}
+          onValueChange={setSelectedValue}
+          style={styles.input}>
+          <Picker.Item
+            label="Controller IGBT Issue"
+            value="Controller IGBT Issue"
+          />
+          <Picker.Item
+            label="Controller Display Issue"
+            value="Controller Display Issue"
+          />
           <Picker.Item label="Winding Problem" value="Winding Problem" />
           <Picker.Item label="Bush Problem" value="Bush Problem" />
           <Picker.Item label="Stamping Damaged" value="Stamping Damaged" />
-          <Picker.Item label="Thrust Plate Damage" value="Thrust Plate Damage" />
-          <Picker.Item label="Shaft and Rotor Damaged" value="Shaft and Rotor Damaged" />
-          <Picker.Item label="Bearing Plate Damaged" value="Bearing Plate Damaged" />
+          <Picker.Item
+            label="Thrust Plate Damage"
+            value="Thrust Plate Damage"
+          />
+          <Picker.Item
+            label="Shaft and Rotor Damaged"
+            value="Shaft and Rotor Damaged"
+          />
+          <Picker.Item
+            label="Bearing Plate Damaged"
+            value="Bearing Plate Damaged"
+          />
           <Picker.Item label="Oil Seal Damaged" value="Oil Seal Damaged" />
           <Picker.Item label="Other" value="other" />
         </Picker>
@@ -394,12 +410,13 @@ const Repair = () => {
           onChangeText={setRepairedBy}
         />
 
-        <TouchableOpacity style={styles.button} onPress={handleSubmit} disabled={loading}>
-          <Text style={styles.buttonText}>{loading ? 'Submitting...' : 'Submit'}</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={[styles.button, styles.clearButton]} onPress={resetForm}>
-          <Text style={styles.buttonText}>Clear Form</Text>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleSubmit}
+          disabled={loading}>
+          <Text style={styles.buttonText}>
+            {loading ? 'Submitting...' : 'Submit'}
+          </Text>
         </TouchableOpacity>
       </View>
     </TouchableWithoutFeedback>
@@ -407,17 +424,42 @@ const Repair = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f4f4f8', padding: 20 },
-  heading: { fontSize: 22, fontWeight: 'bold', textAlign: 'center', marginBottom: 20, color: '#333', marginTop: 30 },
-  label: { fontSize: 16, marginBottom: 8, fontWeight: 'bold', color: '#333' },
-  picker: { height: 50, backgroundColor: '#fff', marginBottom: 15, borderRadius: 8 },
-  input: { backgroundColor: '#f9f9f9', borderWidth: 1, borderColor: '#ccc', borderRadius: 8, padding: 10, marginBottom: 15, fontSize: 14 },
-  textArea: { minHeight: 80 },
-  button: { backgroundColor: '#070604', padding: 12, borderRadius: 8, alignItems: 'center', marginBottom: 10 },
-  clearButton: { backgroundColor: '#d9534f' },
-  buttonText: { color: '#fbd33b', fontSize: 16, fontWeight: '600' },
-  errorText: { color: 'red', fontSize: 14, marginBottom: 10 },
+  container: {flex: 1, backgroundColor: '#f4f4f8', padding: 20},
+  heading: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 20,
+    color: '#333',
+    marginTop: 30,
+  },
+  label: {fontSize: 16, marginBottom: 8, fontWeight: 'bold', color: '#333'},
+  picker: {
+    height: 50,
+    backgroundColor: '#fff',
+    marginBottom: 15,
+    borderRadius: 8,
+  },
+  input: {
+    backgroundColor: '#f9f9f9',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 15,
+    fontSize: 14,
+  },
+  textArea: {minHeight: 80},
+  button: {
+    backgroundColor: '#070604',
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  clearButton: {backgroundColor: '#d9534f'},
+  buttonText: {color: '#fbd33b', fontSize: 16, fontWeight: '600'},
+  errorText: {color: 'red', fontSize: 14, marginBottom: 10},
 });
 
 export default Repair;
-
