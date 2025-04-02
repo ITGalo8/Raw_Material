@@ -14,7 +14,7 @@ import {
 import axios from 'axios';
 import {Picker} from '@react-native-picker/picker';
 
-const Repair = () => {
+const Reject = () => {
   const [selectedItemType, setSelectedItemType] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
   const [quantity, setQuantity] = useState('');
@@ -367,4 +367,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Repair;
+export default Reject;

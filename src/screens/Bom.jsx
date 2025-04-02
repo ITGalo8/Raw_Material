@@ -9,7 +9,7 @@ import {
 import React, {useState, useEffect} from 'react';
 import RNPickerSelect from 'react-native-picker-select';
 
-const {width} = Dimensions.get('window');
+const {width, height} = Dimensions.get('window');
 
 const Bom = () => {
   const [selectedItem, setSelectedItem] = useState(null);
@@ -112,20 +112,23 @@ const Bom = () => {
             </Text>
           </View>
 
-          <FlatList
-            data={rawMaterials}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({item}) => (
-              <View style={styles.tableRow}>
-                <Text style={[styles.tableCell, styles.columnName]}>
-                  {item.rawMaterial.name}
-                </Text>
-                <Text style={[styles.tableCell, styles.columnQuantity]}>
-                  {item.quantity}
-                </Text>
-              </View>
-            )}
-          />
+          <View style={styles.tableContainer}>
+            <FlatList
+              data={rawMaterials}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({item}) => (
+                <View style={styles.tableRow}>
+                  <Text style={[styles.tableCell, styles.columnName]}>
+                    {item.rawMaterial.name}
+                  </Text>
+                  <Text style={[styles.tableCell, styles.columnQuantity]}>
+                    {item.quantity}
+                  </Text>
+                </View>
+              )}
+              ListEmptyComponent={<Text>No raw materials found</Text>}
+            />
+          </View>
         </View>
       )}
     </View>
@@ -169,12 +172,16 @@ const styles = StyleSheet.create({
     padding: 10,
     elevation: 3,
   },
+  tableContainer: {
+    maxHeight: height * 0.5,
+  },
   tableHeader: {
     flexDirection: 'row',
     backgroundColor: '#000',
     paddingVertical: 10,
     borderRadius: 5,
   },
+
   tableHeaderText: {
     fontSize: 16,
     fontWeight: 'bold',
@@ -191,9 +198,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
     textAlign: 'center',
+    paddingVertical: 8,
   },
   columnName: {
     flex: 2,
+    paddingLeft: 10,
+    textAlign: 'left',
   },
   columnQuantity: {
     flex: 1,
