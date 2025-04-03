@@ -14,6 +14,7 @@ import UpdateStockMaterial from '../screens/UpdateStockMaterial';
 import Reject from '../screens/Reject';
 import RepairHistory from '../screens/RepairHistory';
 import RejectHistory from '../screens/RejectHistory';
+import BarCodeScanner from '../screens/BarCodeScanner';
 
 const Stack = createStackNavigator();
 
@@ -102,6 +103,12 @@ const StackNavigator = () => {
         name="RejectHistory"
         component={RejectHistory}
         options={{title: 'RejectHistory', headerShown: false}}
+      />
+
+      <Stack.Screen
+        name="BarCodeScanner"
+        component={BarCodeScanner}
+        options={{title: 'BarCodeScanner', headerShown: false}}
       />
     </Stack.Navigator>
   );

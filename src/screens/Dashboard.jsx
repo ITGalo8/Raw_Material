@@ -89,6 +89,12 @@ const Dashboard = ({navigation}) => {
       title: 'Reject History',
       onPress: () => navigation.navigate('RejectHistory'),
     },
+
+    {
+      icon: <MaterialIcons name="history-toggle-off" size={20} color="black" />,
+      title: 'BarCode Scanner',
+      onPress: () => navigation.navigate('BarCodeScanner'),
+    },
   ];
 
   return (
