@@ -80,7 +80,7 @@
 //           'http://88.222.214.93:5050/admin/getItemRawMaterials',
 //           { subItem: selectedItem.itemName }
 //         );
-        
+
 //         if (response.data.success) {
 //           const items = response.data.data.map(item => ({
 //             id: item.id,
@@ -534,7 +534,6 @@
 
 // export default Repair;
 
-
 import React, {useState, useEffect} from 'react';
 import {
   View,
@@ -547,11 +546,16 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   ScrollView,
+  Dimensions,
 } from 'react-native';
 import axios from 'axios';
 import {Picker} from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MultiSelect from 'react-native-multiple-select';
+
+const {width, height} = Dimensions.get('window');
+
+const scale = width / 375;
 
 const Repair = () => {
   const [selectedItemType, setSelectedItemType] = useState(null);
@@ -615,30 +619,33 @@ const Repair = () => {
       setBackendErrors(prev => ({...prev, materials: null}));
       try {
         const response = await axios.get(
-          `http://88.222.214.93:5050/admin/getItemRawMaterials?subItem=${encodeURIComponent(selectedItem.itemName)}`
+          `http://88.222.214.93:5050/admin/getItemRawMaterials?subItem=${encodeURIComponent(
+            selectedItem.itemName,
+          )}`,
         );
-        
+
         if (response.data.success) {
           const items = response.data.data.map(item => ({
             id: item.id,
             name: item.name,
-            quantity: item.quantity
+            quantity: item.quantity,
           }));
           setAllItems(items);
           setFilteredItems(items);
         } else {
           setBackendErrors(prev => ({
             ...prev,
-            materials: response.data.message || 'Failed to load materials'
+            materials: response.data.message || 'Failed to load materials',
           }));
         }
       } catch (error) {
-        const errorMessage = error.response?.data?.message || 
-                         error.message || 
-                         'Failed to fetch materials';
+        const errorMessage =
+          error.response?.data?.message ||
+          error.message ||
+          'Failed to fetch materials';
         setBackendErrors(prev => ({
           ...prev,
-          materials: errorMessage
+          materials: errorMessage,
         }));
         console.error('Error fetching materials:', error);
       } finally {
@@ -664,16 +671,17 @@ const Repair = () => {
         setItemList([]);
         setBackendErrors(prev => ({
           ...prev,
-          items: response.data.message || `No ${itemType} items found`
+          items: response.data.message || `No ${itemType} items found`,
         }));
       }
     } catch (err) {
-      const errorMessage = err.response?.data?.message || 
-                         err.message || 
-                         `Failed to fetch ${itemType} items`;
+      const errorMessage =
+        err.response?.data?.message ||
+        err.message ||
+        `Failed to fetch ${itemType} items`;
       setBackendErrors(prev => ({
         ...prev,
-        items: errorMessage
+        items: errorMessage,
       }));
       console.error('Error fetching item list:', err);
       setItemList([]);
@@ -682,7 +690,7 @@ const Repair = () => {
     }
   };
 
-  const handleItemSelect = (selectedItems) => {
+  const handleItemSelect = selectedItems => {
     setSelectedItems(selectedItems);
     const newQuantities = {...quantities};
     selectedItems.forEach(itemId => {
@@ -693,10 +701,10 @@ const Repair = () => {
     setQuantities(newQuantities);
   };
 
-  const handleSearch = (text) => {
+  const handleSearch = text => {
     if (text) {
       const filtered = allItems.filter(item =>
-        item.name.toLowerCase().includes(text.toLowerCase())
+        item.name.toLowerCase().includes(text.toLowerCase()),
       );
       setFilteredItems(filtered);
     } else {
@@ -707,11 +715,16 @@ const Repair = () => {
   const handleQuantityChange = (itemId, value) => {
     const item = allItems.find(i => i.id === itemId);
     const maxQuantity = item?.quantity || 0;
-    
-    if (value === '' || (!isNaN(value) && parseFloat(value) >= 0 && parseFloat(value) <= maxQuantity)) {
+
+    if (
+      value === '' ||
+      (!isNaN(value) &&
+        parseFloat(value) >= 0 &&
+        parseFloat(value) <= maxQuantity)
+    ) {
       setQuantities(prev => ({
         ...prev,
-        [itemId]: value === '' ? '' : parseFloat(value)
+        [itemId]: value === '' ? '' : parseFloat(value),
       }));
     }
   };
@@ -722,39 +735,41 @@ const Repair = () => {
 
     // Frontend validation
     const validationErrors = {};
-    
+
     if (!selectedItemType) {
       validationErrors.itemType = 'Please select an item type';
     }
-    
+
     if (!selectedItem) {
       validationErrors.item = 'Please select a specific item';
     }
-    
+
     if (!quantity || isNaN(quantity) || parseInt(quantity, 10) <= 0) {
       validationErrors.quantity = 'Please enter a valid quantity';
     } else if (parseInt(quantity, 10) > selectedItem?.defective) {
       validationErrors.quantity = `Quantity cannot exceed ${selectedItem.defective}`;
     }
-    
+
     if (!faultType) {
       validationErrors.faultType = 'Please select a fault type';
     }
-    
+
     if (faultType === 'Other' && !faultAnalysis) {
       validationErrors.faultAnalysis = 'Please provide fault analysis details';
     }
-    
+
     if (!repairedBy) {
       validationErrors.repairedBy = 'Please enter the repair person name';
     }
-    
+
     // Validate raw materials quantities
     for (const itemId of selectedItems) {
       const qty = quantities[itemId];
       if (!qty || isNaN(qty) || qty <= 0) {
         const item = allItems.find(i => i.id === itemId);
-        validationErrors[`material_${itemId}`] = `Please enter a valid quantity for ${item?.name}`;
+        validationErrors[
+          `material_${itemId}`
+        ] = `Please enter a valid quantity for ${item?.name}`;
       }
     }
 
@@ -781,9 +796,9 @@ const Repair = () => {
           id: itemId,
           name: item?.name,
           quantityUsed: quantities[itemId] || 0,
-          availableQuantity: item?.quantity || 0
+          availableQuantity: item?.quantity || 0,
         };
-      })
+      }),
     };
 
     try {
@@ -812,7 +827,7 @@ const Repair = () => {
       }
     } catch (error) {
       console.log('Submission error:', error);
-      
+
       let errorMessage = 'Submission failed';
       if (error.response) {
         if (error.response.data.errors) {
@@ -827,7 +842,7 @@ const Repair = () => {
       } else {
         errorMessage = error.message || errorMessage;
       }
-      
+
       Alert.alert('Error', errorMessage);
     } finally {
       setSubmitting(false);
@@ -836,132 +851,129 @@ const Repair = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={{flex: 1}}>
+      <View style={styles.container}>
         <Text style={styles.heading}>Repair Data Entry</Text>
-
-        <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.section}>
+          <Text style={styles.label}>Item Type*</Text>
+          <Picker
+            selectedValue={selectedItemType}
+            onValueChange={value => {
+              setSelectedItemType(value);
+              setSelectedItem(null);
+              setBackendErrors(prev => ({...prev, itemType: null}));
+            }}
+            style={[
+              styles.picker,
+              backendErrors.itemType && styles.pickerError,
+            ]}
+            dropdownIconColor="#000">
+            <Picker.Item label="Select item type" value={null} />
+            {itemTypes.map((item, index) => (
+              <Picker.Item key={index} label={item.label} value={item.value} />
+            ))}
+          </Picker>
+          {backendErrors.itemType && (
+            <Text style={styles.errorText}>{backendErrors.itemType}</Text>
+          )}
+        </View>
+        {loading && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#0000ff" />
+            <Text style={styles.loadingText}>Loading items...</Text>
+          </View>
+        )}
+        {backendErrors.items && !loading && (
+          <Text style={styles.errorText}>{backendErrors.items}</Text>
+        )}
+        {selectedItemType && itemList.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.label}>Item Type*</Text>
+            <Text style={styles.label}>Select {selectedItemType}*</Text>
             <Picker
-              selectedValue={selectedItemType}
-              onValueChange={value => {
-                setSelectedItemType(value);
-                setSelectedItem(null);
-                setBackendErrors(prev => ({...prev, itemType: null}));
+              selectedValue={selectedItem}
+              onValueChange={item => {
+                setSelectedItem(item);
+                setBackendErrors(prev => ({...prev, item: null}));
               }}
-              style={[
-                styles.picker,
-                backendErrors.itemType && styles.pickerError
-              ]}
+              style={[styles.picker, backendErrors.item && styles.pickerError]}
               dropdownIconColor="#000">
-              <Picker.Item label="Select item type" value={null} />
-              {itemTypes.map((item, index) => (
-                <Picker.Item key={index} label={item.label} value={item.value} />
+              <Picker.Item label={`Select ${selectedItemType}`} value={null} />
+              {itemList.map((item, index) => (
+                <Picker.Item
+                  key={index}
+                  label={`${item.itemName} (Defective: ${item.defective})`}
+                  value={item}
+                />
               ))}
             </Picker>
-            {backendErrors.itemType && (
-              <Text style={styles.errorText}>{backendErrors.itemType}</Text>
+            {backendErrors.item && (
+              <Text style={styles.errorText}>{backendErrors.item}</Text>
             )}
           </View>
+        )}
+        {selectedItem && (
+          <View style={styles.section}>
+            <Text style={styles.label}>
+              Quantity* (Max: {selectedItem.defective})
+            </Text>
+            <TextInput
+              style={[
+                styles.input,
+                backendErrors.quantity && styles.inputError,
+              ]}
+              value={quantity}
+              onChangeText={text => {
+                const num = text === '' ? '' : parseInt(text, 10);
+                if (text === '' || (!isNaN(num) && num > 0)) {
+                  setQuantity(text);
+                  setBackendErrors(prev => ({...prev, quantity: null}));
+                }
+              }}
+              placeholder={`Enter quantity (1-${selectedItem.defective})`}
+              keyboardType="numeric"
+              maxLength={5}
+            />
+            {backendErrors.quantity && (
+              <Text style={styles.errorText}>{backendErrors.quantity}</Text>
+            )}
+          </View>
+        )}
 
-          {loading && (
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color="#0000ff" />
-              <Text style={styles.loadingText}>Loading items...</Text>
-            </View>
-          )}
-
-          {backendErrors.items && !loading && (
-            <Text style={styles.errorText}>{backendErrors.items}</Text>
-          )}
-
-          {selectedItemType && itemList.length > 0 && (
+        {loadingMaterials ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="small" color="#0000ff" />
+            <Text style={styles.loadingText}>Loading raw materials...</Text>
+          </View>
+        ) : (
+          <>
             <View style={styles.section}>
-              <Text style={styles.label}>Select {selectedItemType}*</Text>
-              <Picker
-                selectedValue={selectedItem}
-                onValueChange={item => {
-                  setSelectedItem(item);
-                  setBackendErrors(prev => ({...prev, item: null}));
-                }}
-                style={[
-                  styles.picker,
-                  backendErrors.item && styles.pickerError
-                ]}
-                dropdownIconColor="#000">
-                <Picker.Item label={`Select ${selectedItemType}`} value={null} />
-                {itemList.map((item, index) => (
-                  <Picker.Item
-                    key={index}
-                    label={`${item.itemName} (Defective: ${item.defective})`}
-                    value={item}
-                  />
-                ))}
-              </Picker>
-              {backendErrors.item && (
-                <Text style={styles.errorText}>{backendErrors.item}</Text>
+              <Text style={styles.label}>Select Raw Materials:</Text>
+              {backendErrors.materials && (
+                <Text style={styles.errorText}>{backendErrors.materials}</Text>
               )}
-            </View>
-          )}
-
-          {selectedItem && (
-            <View style={styles.section}>
-              <Text style={styles.label}>
-                Quantity* (Max: {selectedItem.defective})
-              </Text>
-              <TextInput
-                style={[
-                  styles.input,
-                  backendErrors.quantity && styles.inputError
-                ]}
-                value={quantity}
-                onChangeText={text => {
-                  const num = text === '' ? '' : parseInt(text, 10);
-                  if (text === '' || (!isNaN(num) && num > 0)) {
-                    setQuantity(text);
-                    setBackendErrors(prev => ({...prev, quantity: null}));
-                  }
-                }}
-                placeholder={`Enter quantity (1-${selectedItem.defective})`}
-                keyboardType="numeric"
-                maxLength={5}
+              <MultiSelect
+                hideTags
+                items={filteredItems}
+                uniqueKey="id"
+                onSelectedItemsChange={handleItemSelect}
+                selectedItems={selectedItems}
+                selectText="Pick Raw Materials"
+                searchInputPlaceholderText="Search Raw Materials..."
+                onSearch={handleSearch}
+                displayKey="name"
+                hideSubmitButton
+                styleListContainer={styles.listContainer}
+                textColor="#000"
               />
-              {backendErrors.quantity && (
-                <Text style={styles.errorText}>{backendErrors.quantity}</Text>
-              )}
             </View>
-          )}
 
-          {loadingMaterials ? (
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator size="small" color="#0000ff" />
-              <Text style={styles.loadingText}>Loading raw materials...</Text>
-            </View>
-          ) : (
-            <>
-              <View style={styles.section}>
-                <Text style={styles.label}>Select Raw Materials:</Text>
-                {backendErrors.materials && (
-                  <Text style={styles.errorText}>{backendErrors.materials}</Text>
-                )}
-                <MultiSelect
-                  items={filteredItems}
-                  uniqueKey="id"
-                  onSelectedItemsChange={handleItemSelect}
-                  selectedItems={selectedItems}
-                  selectText="Pick Raw Materials"
-                  searchInputPlaceholderText="Search Raw Materials..."
-                  onSearch={handleSearch}
-                  displayKey="name"
-                  hideSubmitButton
-                  styleListContainer={styles.listContainer}
-                  textColor="#000"
-                />
-              </View>
 
+            <ScrollView
+              style={{maxHeight: 300}}
+              keyboardShouldPersistTaps="handled">
               {selectedItems.map(itemId => {
                 const item = allItems.find(i => i.id === itemId);
                 const errorKey = `material_${itemId}`;
+
                 return (
                   <View key={itemId} style={styles.section}>
                     <Text style={styles.label}>
@@ -975,19 +987,22 @@ const Repair = () => {
                       }}
                       style={[
                         styles.input,
-                        backendErrors[errorKey] && styles.inputError
+                        backendErrors[errorKey] && styles.inputError,
                       ]}
                       keyboardType="numeric"
                     />
                     {backendErrors[errorKey] && (
-                      <Text style={styles.errorText}>{backendErrors[errorKey]}</Text>
+                      <Text style={styles.errorText}>
+                        {backendErrors[errorKey]}
+                      </Text>
                     )}
                   </View>
                 );
               })}
-            </>
-          )}
-
+            </ScrollView>
+          </>
+        )}
+        <ScrollView style={{maxHeight: height * 0.4}}>
           <View style={styles.section}>
             <Text style={styles.label}>Serial Number</Text>
             <TextInput
@@ -1008,7 +1023,7 @@ const Repair = () => {
               }}
               style={[
                 styles.picker,
-                backendErrors.faultType && styles.pickerError
+                backendErrors.faultType && styles.pickerError,
               ]}
               dropdownIconColor="#000">
               <Picker.Item label="Select fault type" value="" />
@@ -1028,7 +1043,7 @@ const Repair = () => {
                 style={[
                   styles.input,
                   styles.textArea,
-                  backendErrors.faultAnalysis && styles.inputError
+                  backendErrors.faultAnalysis && styles.inputError,
                 ]}
                 placeholder="Describe the fault..."
                 value={faultAnalysis}
@@ -1040,7 +1055,9 @@ const Repair = () => {
                 numberOfLines={4}
               />
               {backendErrors.faultAnalysis && (
-                <Text style={styles.errorText}>{backendErrors.faultAnalysis}</Text>
+                <Text style={styles.errorText}>
+                  {backendErrors.faultAnalysis}
+                </Text>
               )}
             </View>
           )}
@@ -1050,7 +1067,7 @@ const Repair = () => {
             <TextInput
               style={[
                 styles.input,
-                backendErrors.repairedBy && styles.inputError
+                backendErrors.repairedBy && styles.inputError,
               ]}
               placeholder="Enter technician name"
               value={repairedBy}
