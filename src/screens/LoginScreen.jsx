@@ -34,10 +34,12 @@ const LoginScreen = () => {
         },
       );
 
-      await AsyncStorage.setItem(
-        'userData',
-        JSON.stringify(response.data.data),
-      );
+      const userData = response.data.data;
+      
+      await AsyncStorage.setItem('userData', JSON.stringify(userData));
+      await AsyncStorage.setItem('userId', userData.id); // Store user ID separately
+
+      console.log("user login id", userData.id)
 
       Alert.alert('Success', 'Successfully Logged In');
       navigation.navigate('Dashboard');
