@@ -284,7 +284,7 @@ const Reject = () => {
           onPress={handleSubmit}
           disabled={submitting}>
           <Text style={styles.buttonText}>
-            {submitting ? 'Submitting...' : 'Submit Repair Data'}
+            {submitting ? 'Submitting...' : 'Submit Reject Data'}
           </Text>
         </TouchableOpacity>
       </ScrollView>
