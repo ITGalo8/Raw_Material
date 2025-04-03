@@ -193,7 +193,7 @@ const Stock = () => {
   }, []);
 
   const handleItemPress = (item) => {
-    if (!userId) return; // Don't proceed if userId isn't available
+    if (!userId) return; 
     
     navigation.navigate('UpdateStockMaterial', { 
       rawMaterialId: item.id,
@@ -202,6 +202,7 @@ const Stock = () => {
       userId: userId,
     });
     console.log("user id", userId)
+    console.log("rawMaterial", item.id)
   };
 
   if (loading) {

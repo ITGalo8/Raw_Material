@@ -138,45 +138,101 @@ const UpdateStockMaterial = ({ route }) => {
   const [quantity, setQuantity] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // const handleSubmit = async () => {
+  //   if (!quantity) {
+  //     Alert.alert('Error', 'Please enter a quantity');
+  //     return;
+  //   }
+
+  //   const quantityValue = parseInt(quantity);
+  //   if (isNaN(quantityValue)) {
+  //     Alert.alert('Error', 'Quantity must be a number');
+  //     return;
+  //   }
+
+  //   if (quantityValue <= 0) {
+  //     Alert.alert('Error', 'Quantity must be greater than 0');
+  //     return;
+  //   }
+
+  //   const itemData = {
+  //     rawMaterialId,
+  //     userId,
+  //     quantity: quantityValue,
+  //     type: "IN" 
+  //   };
+
+  //   console.log("before response", itemData)
+
+  //   setLoading(true);
+
+  //   try {
+  //     const response = await axios.post('http://88.222.214.93:5050/admin/updateRawMaterialStock', {
+  //       items: [itemData]
+  //     });
+
+  //     console.log('Response:', response.data);
+  //     Alert.alert('Success', 'Stock added successfully!');
+  //     setQuantity('');
+  //   } catch (error) {
+  //     console.log('Error updating stock:', error);
+  //     if (error.response) {
+  //       Alert.alert(
+  //         'Error',
+  //         error.response.data.message || 'Failed to update stock'
+  //       );
+  //     } else {
+  //       Alert.alert('Error', 'Network error. Please try again.');
+  //     }
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const handleSubmit = async () => {
     if (!quantity) {
       Alert.alert('Error', 'Please enter a quantity');
       return;
     }
-
+  
     const quantityValue = parseInt(quantity);
     if (isNaN(quantityValue)) {
       Alert.alert('Error', 'Quantity must be a number');
       return;
     }
-
+  
     if (quantityValue <= 0) {
       Alert.alert('Error', 'Quantity must be greater than 0');
       return;
     }
-
+  
     const itemData = {
       rawMaterialId,
       userId,
       quantity: quantityValue,
-      type: "IN" 
+      type: "IN"
     };
-
-    console.log("before response", itemData)
-
+  
     setLoading(true);
-    
+  
     try {
-      const response = await axios.post('http://88.222.214.93:5050/admin/updateRawMaterialStock', {
-        items: [itemData]
-      });
-      
+      const response = await axios.post(
+        'http://88.222.214.93:5050/admin/updateRawMaterialStock',
+        itemData, // Send the object directly, not wrapped in an array
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+  
       console.log('Response:', response.data);
       Alert.alert('Success', 'Stock added successfully!');
       setQuantity('');
     } catch (error) {
       console.log('Error updating stock:', error);
       if (error.response) {
+        console.log('Error response data:', error.response.data);
         Alert.alert(
           'Error',
           error.response.data.message || 'Failed to update stock'
