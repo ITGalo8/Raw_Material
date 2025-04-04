@@ -135,7 +135,9 @@ const RepairHistory = () => {
               </Text>
               <Text style={styles.infoText}>
                 <Text style={styles.titleText}>Quantity: </Text>
-                <Text style={styles.dataText}>{part.quantity || 'N/A'}</Text>
+                <Text style={styles.dataText}>{part.quantity  || 'N/A'}</Text>
+                <Text style={styles.dataText}>{part.unit}</Text>
+
               </Text>
               <Text style={styles.infoText}>
                 <Text style={styles.titleText}>Serviced At: </Text>

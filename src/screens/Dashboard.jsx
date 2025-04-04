@@ -61,7 +61,7 @@ const Dashboard = ({navigation}) => {
     },
     {
       icon: <MaterialIcons name="subtitles" size={20} color="black" />,
-      title: 'AddSubItemName',
+      title: 'Add Raw Material',
       onPress: () => navigation.navigate('AddSubItemName'),
     },
     {
