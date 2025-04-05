@@ -311,7 +311,7 @@ const Reject = () => {
       );
 
       if (response.data.success) {
-        Alert.alert('Success', 'Repair data submitted successfully');
+        Alert.alert('Success', 'Reject data submitted successfully');
         // Reset form
         setSelectedItemType(null);
         setSelectedItem(null);

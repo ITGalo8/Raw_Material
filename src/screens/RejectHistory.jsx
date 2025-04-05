@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#fbd33b',
+    // backgroundColor: '#fbd33b',
   },
   listContainer: {
     flex: 1,

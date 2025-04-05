@@ -136,7 +136,7 @@ const RepairHistory = () => {
               <Text style={styles.infoText}>
                 <Text style={styles.titleText}>Quantity: </Text>
                 <Text style={styles.dataText}>{part.quantity  || 'N/A'}</Text>
-                <Text style={styles.dataText}>{part.unit}</Text>
+                {" "}<Text style={styles.dataText}>{part.unit}</Text>
 
               </Text>
               <Text style={styles.infoText}>
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#fbd33b',
+    // backgroundColor: '#fbd33b',
   },
   listContainer: {
     flex: 1,
