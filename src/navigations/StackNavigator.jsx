@@ -16,6 +16,7 @@ import RepairHistory from '../screens/RepairHistory';
 import RejectHistory from '../screens/RejectHistory';
 import BarCodeScanner from '../screens/BarCodeScanner';
 
+
 const Stack = createStackNavigator();
 
 const StackNavigator = () => {
@@ -110,6 +111,8 @@ const StackNavigator = () => {
         component={BarCodeScanner}
         options={{title: 'BarCodeScanner', headerShown: false}}
       />
+
+     
     </Stack.Navigator>
   );
 };

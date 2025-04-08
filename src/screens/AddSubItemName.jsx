@@ -26,7 +26,7 @@ const AddSubItemName = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          'http://88.222.214.93:5050/admin/showUnit',
+          'http://88.222.214.93:5000/admin/showUnit',
         );
         setUnit(response.data.data);
       } catch (error) {
@@ -54,7 +54,7 @@ const AddSubItemName = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        'http://88.222.214.93:5050/admin/addRawMaterial',
+        'http://88.222.214.93:5000/admin/addRawMaterial',
         {
           rawMaterialName: rawMaterialName.trim(),
           unit: selectedUnitName, // Now sending the unit name instead of ID

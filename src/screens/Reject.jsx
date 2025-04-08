@@ -18,6 +18,7 @@ import axios from 'axios';
 import {Picker} from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MultiSelect from 'react-native-multiple-select';
+import {useNavigation} from '@react-navigation/native';
 
 const {width, height} = Dimensions.get('window');
 const scale = width / 375;
@@ -25,7 +26,7 @@ const scale = width / 375;
 const Reject = () => {
   const [selectedItemType, setSelectedItemType] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [quantity, setQuantity] = useState('');
+  const [quantity, setQuantity] = useState('1');
   const [serialNumber, setSerialNumber] = useState('');
   const [faultType, setFaultType] = useState('');
   const [faultAnalysis, setFaultAnalysis] = useState('');
@@ -46,6 +47,7 @@ const Reject = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [backendErrors, setBackendErrors] = useState({});
+  const navigation = useNavigation();
 
   const itemTypes = [
     {label: 'Motor', value: 'Motor'},
@@ -71,7 +73,7 @@ const Reject = () => {
       setLoadingUnits(true);
       try {
         const response = await axios.get(
-          'http://88.222.214.93:5050/admin/showUnit',
+          'http://88.222.214.93:5000/admin/showUnit',
         );
         if (response.data.success) {
           setUnits(response.data.data);
@@ -107,7 +109,7 @@ const Reject = () => {
       setBackendErrors(prev => ({...prev, materials: null}));
       try {
         const response = await axios.get(
-          `http://88.222.214.93:5050/admin/getItemRawMaterials?subItem=${encodeURIComponent(
+          `http://88.222.214.93:5000/admin/getItemRawMaterials?subItem=${encodeURIComponent(
             selectedItem.itemName,
           )}`,
         );
@@ -151,7 +153,7 @@ const Reject = () => {
     setBackendErrors(prev => ({...prev, items: null}));
     try {
       const response = await axios.get(
-        `http://88.222.214.93:5050/admin/showDefectiveItemsList?itemName=${itemType}`,
+        `http://88.222.214.93:5000/admin/showDefectiveItemsList?itemName=${itemType}`,
       );
       if (response.data && response.data.data) {
         setItemList(response.data.data);
@@ -217,17 +219,20 @@ const Reject = () => {
   const handleQuantityChange = (itemId, value) => {
     const item = allItems.find(i => i.id === itemId);
     const maxQuantity = item?.quantity || 0;
+    console.log('Maximum Quantity', maxQuantity);
 
-    // Allow decimal values
-    if (value === '' || /^\d*\.?\d*$/.test(value)) {
-      const numericValue = value === '' ? '' : parseFloat(value);
-      if (value === '' || (numericValue >= 0 && numericValue <= maxQuantity)) {
+    // // Allow decimal values
+    // if (value === '' || /^\d*\.?\d*$/.test(value)) {
+    //   const numericValue = value === '' ? '' : parseFloat(value);
+    //   // console.log('Numeric Vaalue', numericValue);
+    //   if (value === '' || (numericValue >= 0 && numericValue <= maxQuantity)) {
+    //     console.log("Numeric Value", numericValue)
         setQuantities(prev => ({
           ...prev,
           [itemId]: value,
         }));
-      }
-    }
+    //   }
+    // }
   };
 
   const handleSubmit = async () => {
@@ -282,7 +287,7 @@ const Reject = () => {
     }
 
     const userId = await AsyncStorage.getItem('userId');
-    const repairData = {
+    const rejectData = {
       item: selectedItemType,
       subItem: selectedItem.itemName,
       quantity: parseFloat(quantity),
@@ -306,12 +311,14 @@ const Reject = () => {
     try {
       setSubmitting(true);
       const response = await axios.post(
-        'http://88.222.214.93:5050/admin/addServiceRecord',
-        repairData,
+        'http://88.222.214.93:5000/admin/addServiceRecord',
+        rejectData,
       );
 
+      navigation.goBack();
+
       if (response.data.success) {
-        Alert.alert('Success', 'Reject data submitted successfully');
+        Alert.alert('Success', 'Repair data submitted successfully');
         // Reset form
         setSelectedItemType(null);
         setSelectedItem(null);
@@ -360,7 +367,6 @@ const Reject = () => {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView
         style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={100}>
         <View style={styles.formContainer}>
           <Text style={styles.heading}>Reject Data Entry</Text>
@@ -415,7 +421,7 @@ const Reject = () => {
             </View>
           )}
 
-          {selectedItem && (
+          {/* {selectedItem && (
             <View style={styles.section}>
               <Text style={styles.label}>
                 Quantity* (Max: {selectedItem.defective})
@@ -440,7 +446,7 @@ const Reject = () => {
                 <Text style={styles.errorText}>{backendErrors.quantity}</Text>
               )}
             </View>
-          )}
+          )} */}
 
           {selectedItem && !loadingMaterials && (
             <View style={styles.section}>
@@ -480,8 +486,10 @@ const Reject = () => {
                   <Text style={styles.label}>{item?.name}</Text>
                   <View style={styles.quantityRow}>
                     <TextInput
-                      value={quantities[itemId]?.toString() || ''}
+                      value={quantities[itemId].toString()}
                       onChangeText={value => {
+                        console.log(value, quantities)
+
                         handleQuantityChange(itemId, value);
                         setBackendErrors(prev => ({...prev, [errorKey]: null}));
                       }}
@@ -489,7 +497,7 @@ const Reject = () => {
                         styles.quantityInput,
                         backendErrors[errorKey] && styles.inputError,
                       ]}
-                      keyboardType="numeric"
+                      // keyboardType="numeric"
                       placeholder="Qty"
                     />
                     {loadingUnits ? (
@@ -578,7 +586,7 @@ const Reject = () => {
             )}
 
             <View style={styles.section}>
-              <Text style={styles.label}>Rejected By*</Text>
+              <Text style={styles.label}>Reject By*</Text>
               <TextInput
                 style={[
                   styles.input,
@@ -615,7 +623,7 @@ const Reject = () => {
               {submitting ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text style={styles.buttonText}>Submit Repair Data</Text>
+                <Text style={styles.buttonText}>Submit Data</Text>
               )}
             </TouchableOpacity>
           </ScrollView>

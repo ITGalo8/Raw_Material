@@ -14,7 +14,6 @@ import Sidebar from '../components/Modal';
 import axios from 'axios';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Logout from './Logout';
-import AllDefectiveData from './AllDefectiveData';
 
 const Dashboard = ({navigation}) => {
   const [data, setData] = useState(null);
@@ -24,7 +23,7 @@ const Dashboard = ({navigation}) => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          'http://88.222.214.93:5050/admin/showDefectiveItemsOfWarehouse',
+          'http://88.222.214.93:5000/admin/showDefectiveItemsOfWarehouse',
         );
         setData(response.data.data);
       } catch (error) {
@@ -95,6 +94,7 @@ const Dashboard = ({navigation}) => {
       title: 'BarCode Scanner',
       onPress: () => navigation.navigate('BarCodeScanner'),
     },
+
   ];
 
   return (

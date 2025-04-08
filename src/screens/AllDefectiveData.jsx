@@ -24,7 +24,7 @@ const AllDefectiveData = ({ navigation }) => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `http://88.222.214.93:5050/admin/showDefectiveItemsList?itemName=${itemType}`
+          `http://88.222.214.93:5000/admin/showDefectiveItemsList?itemName=${itemType}`
         );
         setData(response.data.data);
       } catch (err) {

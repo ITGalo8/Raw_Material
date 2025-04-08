@@ -1,539 +1,3 @@
-// import React, {useState, useEffect} from 'react';
-// import {
-//   View,
-//   Text,
-//   StyleSheet,
-//   ActivityIndicator,
-//   Alert,
-//   TextInput,
-//   TouchableOpacity,
-//   Keyboard,
-//   TouchableWithoutFeedback,
-//   ScrollView,
-// } from 'react-native';
-// import axios from 'axios';
-// import {Picker} from '@react-native-picker/picker';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
-// import MultiSelect from 'react-native-multiple-select';
-
-// const Repair = () => {
-
-//   const [selectedItemType, setSelectedItemType] = useState(null);
-//   const [selectedItem, setSelectedItem] = useState(null);
-//   const [quantity, setQuantity] = useState('');
-//   const [serialNumber, setSerialNumber] = useState('');
-//   const [faultType, setFaultType] = useState('');
-//   const [faultAnalysis, setFaultAnalysis] = useState('');
-//   const [repairedBy, setRepairedBy] = useState('');
-//   const [remark, setRemark] = useState('');
-
-//   const [itemList, setItemList] = useState([]);
-//   const [allItems, setAllItems] = useState([]);
-//   const [filteredItems, setFilteredItems] = useState([]);
-//   const [selectedItems, setSelectedItems] = useState([]);
-//   const [quantities, setQuantities] = useState({});
-
-//   const [loading, setLoading] = useState(false);
-//   const [loadingMaterials, setLoadingMaterials] = useState(false);
-//   const [submitting, setSubmitting] = useState(false);
-//   const [error, setError] = useState(null);
-
-//   const itemTypes = [
-//     {label: 'Motor', value: 'Motor'},
-//     {label: 'Pump', value: 'Pump'},
-//     {label: 'Controller', value: 'Controller'},
-//   ];
-
-//   const faultTypes = [
-//     'Controller IGBT Issue',
-//     'Controller Display Issue',
-//     'Winding Problem',
-//     'Bush Problem',
-//     'Stamping Damaged',
-//     'Thrust Plate Damage',
-//     'Shaft and Rotor Damaged',
-//     'Bearing Plate Damaged',
-//     'Oil Seal Damaged',
-//     'Other',
-//   ];
-
-//   useEffect(() => {
-//     if (selectedItemType) {
-//       fetchItemList(selectedItemType);
-//     } else {
-//       setItemList([]);
-//       setSelectedItem(null);
-//     }
-//   }, [selectedItemType]);
-
-//   useEffect(() => {
-//     const fetchItems = async () => {
-//       if (!selectedItem) {
-//         setAllItems([]);
-//         setFilteredItems([]);
-//         return;
-//       }
-
-//       setLoadingMaterials(true);
-//       try {
-//         const response = await axios.get(
-//           'http://88.222.214.93:5050/admin/getItemRawMaterials',
-//           { subItem: selectedItem.itemName }
-//         );
-
-//         if (response.data.success) {
-//           const items = response.data.data.map(item => ({
-//             id: item.id,
-//             name: item.name,
-//             quantity: item.quantity
-//           }));
-//           setAllItems(items);
-//           setFilteredItems(items);
-//         } else {
-//           Alert.alert('Error', response.data?.message || 'Failed to fetch raw materials');
-//         }
-//       } catch (error) {
-//         console.log('Failed to fetch raw materials:', error);
-//         // Alert.alert('Error', 'Failed to fetch raw materials');
-//         Alert.alert('Error', JSON.stringify(error.response.data?.message));
-//       } finally {
-//         setLoadingMaterials(false);
-//       }
-//     };
-
-//     fetchItems();
-//   }, [selectedItem]);
-
-//   const fetchItemList = async itemType => {
-//     const storedUserId = await AsyncStorage.getItem('userId');
-//     setLoading(true);
-//     setError(null);
-//     try {
-//       const response = await axios.get(
-//         `http://88.222.214.93:5050/admin/showDefectiveItemsList?itemName=${itemType}`,
-//       );
-//       if (response.data && response.data.data) {
-//         setItemList(response.data.data);
-//       } else {
-//         setItemList([]);
-//         setError(`No ${itemType} items found`);
-//       }
-//     } catch (err) {
-//       console.error('Error fetching item list:', err);
-//       setError(`Failed to fetch ${itemType} items`);
-//       setItemList([]);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const handleItemSelect = (selectedItems) => {
-//     setSelectedItems(selectedItems);
-//     const newQuantities = {...quantities};
-//     selectedItems.forEach(itemId => {
-//       if (!newQuantities[itemId]) {
-//         newQuantities[itemId] = '';
-//       }
-//     });
-//     setQuantities(newQuantities);
-//   };
-
-//   const handleSearch = (text) => {
-//     if (text) {
-//       const filtered = allItems.filter(item =>
-//         item.name.toLowerCase().includes(text.toLowerCase())
-//       );
-//       setFilteredItems(filtered);
-//     } else {
-//       setFilteredItems(allItems);
-//     }
-//   };
-
-//   const handleQuantityChange = (itemId, value) => {
-//     const item = allItems.find(i => i.id === itemId);
-//     const maxQuantity = item?.quantity || 0;
-
-//     if (value === '' || (!isNaN(value) && parseFloat(value) >= 0 && parseFloat(value) <= maxQuantity)) {
-//       setQuantities(prev => ({
-//         ...prev,
-//         [itemId]: value === '' ? '' : parseFloat(value)
-//       }));
-//     }
-//   };
-
-//   const handleSubmit = async () => {
-//     Keyboard.dismiss();
-
-//     if (!selectedItemType || !selectedItem) {
-//       Alert.alert('Error', 'Please select an item type and specific item');
-//       return;
-//     }
-
-//     if (!quantity || isNaN(quantity) || parseInt(quantity, 10) <= 0) {
-//       Alert.alert('Error', 'Please enter a valid quantity');
-//       return;
-//     }
-
-//     if (parseInt(quantity, 10) > selectedItem.defective) {
-//       Alert.alert('Error', `Quantity cannot exceed ${selectedItem.defective}`);
-//       return;
-//     }
-
-//     if (!faultType) {
-//       Alert.alert('Error', 'Please select a fault type');
-//       return;
-//     }
-
-//     if (faultType === 'Other' && !faultAnalysis) {
-//       Alert.alert('Error', 'Please provide fault analysis details');
-//       return;
-//     }
-
-//     if (!repairedBy) {
-//       Alert.alert('Error', 'Please enter the repair person name');
-//       return;
-//     }
-
-//     // Validate raw materials quantities
-//     for (const itemId of selectedItems) {
-//       const qty = quantities[itemId];
-//       if (!qty || isNaN(qty) || qty <= 0) {
-//         const item = allItems.find(i => i.id === itemId);
-//         Alert.alert('Error', `Please enter a valid quantity for ${item?.name}`);
-//         return;
-//       }
-//     }
-
-//     const repairData = {
-//       itemType: selectedItemType,
-//       itemId: selectedItem._id,
-//       itemName: selectedItem.itemName,
-//       quantity: parseInt(quantity, 10),
-//       serialNumber,
-//       faultType: faultType === 'Other' ? faultAnalysis : faultType,
-//       repairedBy,
-//       remark,
-//       date: new Date().toISOString(),
-//       isRepaired: false,
-//       userId: await AsyncStorage.getItem('userId'),
-//       rawMaterials: selectedItems.map(itemId => {
-//         const item = allItems.find(i => i.id === itemId);
-//         return {
-//           id: itemId,
-//           name: item?.name,
-//           quantityUsed: quantities[itemId] || 0,
-//           availableQuantity: item?.quantity || 0
-//         };
-//       })
-//     };
-
-//     try {
-//       setSubmitting(true);
-//       const response = await axios.post(
-//         'http://88.222.214.93:5050/admin/reject-item',
-//         repairData,
-//       );
-
-//       if (response.data.success) {
-//         Alert.alert('Success', 'Repair data submitted successfully');
-//         // Reset form
-//         setSelectedItemType(null);
-//         setSelectedItem(null);
-//         setQuantity('');
-//         setSerialNumber('');
-//         setFaultType('');
-//         setFaultAnalysis('');
-//         setRepairedBy('');
-//         setRemark('');
-//         setSelectedItems([]);
-//         setQuantities({});
-//       } else {
-//         throw new Error(response.data.message || 'Submission failed');
-//       }
-//     } catch (error) {
-//       console.log('Submission error:', error);
-//       Alert.alert(
-//         'Error',
-//         error.response?.data?.message || error.message || 'Submission failed',
-//       );
-//     } finally {
-//       setSubmitting(false);
-//     }
-//   };
-
-//   return (
-//     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-//       <ScrollView contentContainerStyle={styles.container}>
-//         <Text style={styles.heading}>Repair Data Entry</Text>
-
-//         <View style={styles.section}>
-//           <Text style={styles.label}>Item Type*</Text>
-//           <Picker
-//             selectedValue={selectedItemType}
-//             onValueChange={value => {
-//               setSelectedItemType(value);
-//               setSelectedItem(null);
-//             }}
-//             style={styles.picker}
-//             dropdownIconColor="#000">
-//             <Picker.Item label="Select item type" value={null} />
-//             {itemTypes.map((item, index) => (
-//               <Picker.Item key={index} label={item.label} value={item.value} />
-//             ))}
-//           </Picker>
-//         </View>
-
-//         {loading && (
-//           <View style={styles.loadingContainer}>
-//             <ActivityIndicator size="large" color="#0000ff" />
-//             <Text style={styles.loadingText}>Loading items...</Text>
-//           </View>
-//         )}
-
-//         {error && !loading && <Text style={styles.errorText}>{error}</Text>}
-
-//         {selectedItemType && itemList.length > 0 && (
-//           <View style={styles.section}>
-//             <Text style={styles.label}>Select {selectedItemType}*</Text>
-//             <Picker
-//               selectedValue={selectedItem}
-//               onValueChange={setSelectedItem}
-//               style={styles.picker}
-//               dropdownIconColor="#000">
-//               <Picker.Item label={`Select ${selectedItemType}`} value={null} />
-//               {itemList.map((item, index) => (
-//                 <Picker.Item
-//                   key={index}
-//                   label={`${item.itemName} (Defective: ${item.defective})`}
-//                   value={item}
-//                 />
-//               ))}
-//             </Picker>
-//           </View>
-//         )}
-
-//         {selectedItem && (
-//           <View style={styles.section}>
-//             <Text style={styles.label}>
-//               Quantity* (Max: {selectedItem.defective})
-//             </Text>
-//             <TextInput
-//               style={styles.input}
-//               value={quantity}
-//               onChangeText={text => {
-//                 const num = text === '' ? '' : parseInt(text, 10);
-//                 if (text === '' || (!isNaN(num) && num > 0)) {
-//                   setQuantity(text);
-//                 }
-//               }}
-//               placeholder={`Enter quantity (1-${selectedItem.defective})`}
-//               keyboardType="numeric"
-//               maxLength={5}
-//             />
-//           </View>
-//         )}
-
-//         <View style={styles.section}>
-//           <Text style={styles.label}>Serial Number</Text>
-//           <TextInput
-//             style={styles.input}
-//             value={serialNumber}
-//             onChangeText={setSerialNumber}
-//             placeholder="Enter serial number"
-//           />
-//         </View>
-
-//         <View style={styles.section}>
-//           <Text style={styles.label}>Fault Type*</Text>
-//           <Picker
-//             selectedValue={faultType}
-//             onValueChange={setFaultType}
-//             style={styles.picker}
-//             dropdownIconColor="#000">
-//             <Picker.Item label="Select fault type" value="" />
-//             {faultTypes.map((fault, index) => (
-//               <Picker.Item key={index} label={fault} value={fault} />
-//             ))}
-//           </Picker>
-//         </View>
-
-//         {faultType === 'Other' && (
-//           <View style={styles.section}>
-//             <Text style={styles.label}>Fault Analysis Details*</Text>
-//             <TextInput
-//               style={[styles.input, styles.textArea]}
-//               placeholder="Describe the fault..."
-//               value={faultAnalysis}
-//               onChangeText={setFaultAnalysis}
-//               multiline
-//               numberOfLines={4}
-//             />
-//           </View>
-//         )}
-
-//         <View style={styles.section}>
-//           <Text style={styles.label}>Repaired By*</Text>
-//           <TextInput
-//             style={styles.input}
-//             placeholder="Enter technician name"
-//             value={repairedBy}
-//             onChangeText={setRepairedBy}
-//           />
-//         </View>
-
-//         {loadingMaterials ? (
-//           <View style={styles.loadingContainer}>
-//             <ActivityIndicator size="small" color="#0000ff" />
-//             <Text style={styles.loadingText}>Loading raw materials...</Text>
-//           </View>
-//         ) : (
-//           <>
-//             <View style={styles.section}>
-//               <Text style={styles.label}>Select Raw Materials:</Text>
-//               <MultiSelect
-//                 items={filteredItems}
-//                 uniqueKey="id"
-//                 onSelectedItemsChange={handleItemSelect}
-//                 selectedItems={selectedItems}
-//                 selectText="Pick Raw Materials"
-//                 searchInputPlaceholderText="Search Raw Materials..."
-//                 onSearch={handleSearch}
-//                 displayKey="name"
-//                 hideSubmitButton
-//                 styleListContainer={styles.listContainer}
-//                 textColor="#000"
-//               />
-//             </View>
-
-//             {selectedItems.map(itemId => {
-//               const item = allItems.find(i => i.id === itemId);
-//               return (
-//                 <View key={itemId} style={styles.section}>
-//                   <Text style={styles.label}>
-//                     Quantity for {item?.name} (Available: {item?.quantity}):
-//                   </Text>
-//                   <TextInput
-//                     value={quantities[itemId]?.toString() || ''}
-//                     onChangeText={value => handleQuantityChange(itemId, value)}
-//                     style={styles.input}
-//                     keyboardType="numeric"
-//                   />
-//                 </View>
-//               );
-//             })}
-//           </>
-//         )}
-
-//         <View style={styles.section}>
-//           <Text style={styles.label}>Remarks</Text>
-//           <TextInput
-//             style={[styles.input, styles.textArea]}
-//             placeholder="Any additional notes..."
-//             value={remark}
-//             onChangeText={setRemark}
-//             multiline
-//             numberOfLines={3}
-//           />
-//         </View>
-
-//         <TouchableOpacity
-//           style={[styles.button, submitting && styles.buttonDisabled]}
-//           onPress={handleSubmit}
-//           disabled={submitting}>
-//           {submitting ? (
-//             <ActivityIndicator color="#fff" />
-//           ) : (
-//             <Text style={styles.buttonText}>Submit Repair Data</Text>
-//           )}
-//         </TouchableOpacity>
-//       </ScrollView>
-//     </TouchableWithoutFeedback>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flexGrow: 1,
-//     backgroundColor: '#f8f9fa',
-//     padding: 20,
-//     paddingBottom: 40,
-//   },
-//   heading: {
-//     fontSize: 24,
-//     fontWeight: 'bold',
-//     textAlign: 'center',
-//     marginBottom: 25,
-//     color: '#2c3e50',
-//     paddingTop: 30,
-//   },
-//   section: {
-//     marginBottom: 20,
-//   },
-//   label: {
-//     fontSize: 16,
-//     marginBottom: 8,
-//     fontWeight: '600',
-//     color: '#34495e',
-//   },
-//   picker: {
-//     backgroundColor: '#fff',
-//     borderWidth: 1,
-//     borderColor: '#ddd',
-//     borderRadius: 8,
-//     paddingHorizontal: 10,
-//     height: 50,
-//   },
-//   input: {
-//     backgroundColor: '#fff',
-//     borderWidth: 1,
-//     borderColor: '#ddd',
-//     borderRadius: 8,
-//     padding: 12,
-//     fontSize: 16,
-//   },
-//   textArea: {
-//     minHeight: 100,
-//     textAlignVertical: 'top',
-//   },
-//   button: {
-//     backgroundColor: '#3498db',
-//     padding: 15,
-//     borderRadius: 8,
-//     alignItems: 'center',
-//     marginTop: 20,
-//   },
-//   buttonDisabled: {
-//     backgroundColor: '#bdc3c7',
-//   },
-//   buttonText: {
-//     color: '#fff',
-//     fontSize: 18,
-//     fontWeight: 'bold',
-//   },
-//   loadingContainer: {
-//     alignItems: 'center',
-//     marginVertical: 20,
-//   },
-//   loadingText: {
-//     marginTop: 10,
-//     color: '#7f8c8d',
-//   },
-//   errorText: {
-//     color: '#e74c3c',
-//     textAlign: 'center',
-//     marginVertical: 10,
-//     fontSize: 16,
-//   },
-//   listContainer: {
-//     backgroundColor: '#fff',
-//     borderWidth: 1,
-//     borderColor: '#ddd',
-//     borderRadius: 8,
-//   },
-// });
-
-// export default Repair;
-
 import React, {useState, useEffect} from 'react';
 import {
   View,
@@ -554,6 +18,7 @@ import axios from 'axios';
 import {Picker} from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MultiSelect from 'react-native-multiple-select';
+import {useNavigation} from '@react-navigation/native';
 
 const {width, height} = Dimensions.get('window');
 const scale = width / 375;
@@ -561,7 +26,7 @@ const scale = width / 375;
 const Repair = () => {
   const [selectedItemType, setSelectedItemType] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [quantity, setQuantity] = useState('');
+  const [quantity, setQuantity] = useState('1');
   const [serialNumber, setSerialNumber] = useState('');
   const [faultType, setFaultType] = useState('');
   const [faultAnalysis, setFaultAnalysis] = useState('');
@@ -582,6 +47,7 @@ const Repair = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [backendErrors, setBackendErrors] = useState({});
+  const navigation = useNavigation();
 
   const itemTypes = [
     {label: 'Motor', value: 'Motor'},
@@ -607,7 +73,7 @@ const Repair = () => {
       setLoadingUnits(true);
       try {
         const response = await axios.get(
-          'http://88.222.214.93:5050/admin/showUnit',
+          'http://88.222.214.93:5000/admin/showUnit',
         );
         if (response.data.success) {
           setUnits(response.data.data);
@@ -643,7 +109,7 @@ const Repair = () => {
       setBackendErrors(prev => ({...prev, materials: null}));
       try {
         const response = await axios.get(
-          `http://88.222.214.93:5050/admin/getItemRawMaterials?subItem=${encodeURIComponent(
+          `http://88.222.214.93:5000/admin/getItemRawMaterials?subItem=${encodeURIComponent(
             selectedItem.itemName,
           )}`,
         );
@@ -687,7 +153,7 @@ const Repair = () => {
     setBackendErrors(prev => ({...prev, items: null}));
     try {
       const response = await axios.get(
-        `http://88.222.214.93:5050/admin/showDefectiveItemsList?itemName=${itemType}`,
+        `http://88.222.214.93:5000/admin/showDefectiveItemsList?itemName=${itemType}`,
       );
       if (response.data && response.data.data) {
         setItemList(response.data.data);
@@ -753,17 +219,20 @@ const Repair = () => {
   const handleQuantityChange = (itemId, value) => {
     const item = allItems.find(i => i.id === itemId);
     const maxQuantity = item?.quantity || 0;
+    console.log('Maximum Quantity', maxQuantity);
 
-    // Allow decimal values
-    if (value === '' || /^\d*\.?\d*$/.test(value)) {
-      const numericValue = value === '' ? '' : parseFloat(value);
-      if (value === '' || (numericValue >= 0 && numericValue <= maxQuantity)) {
+    // // Allow decimal values
+    // if (value === '' || /^\d*\.?\d*$/.test(value)) {
+    //   const numericValue = value === '' ? '' : parseFloat(value);
+    //   // console.log('Numeric Vaalue', numericValue);
+    //   if (value === '' || (numericValue >= 0 && numericValue <= maxQuantity)) {
+    //     console.log("Numeric Value", numericValue)
         setQuantities(prev => ({
           ...prev,
           [itemId]: value,
         }));
-      }
-    }
+    //   }
+    // }
   };
 
   const handleSubmit = async () => {
@@ -842,9 +311,11 @@ const Repair = () => {
     try {
       setSubmitting(true);
       const response = await axios.post(
-        'http://88.222.214.93:5050/admin/addServiceRecord',
+        'http://88.222.214.93:5000/admin/addServiceRecord',
         repairData,
       );
+
+      navigation.goBack();
 
       if (response.data.success) {
         Alert.alert('Success', 'Repair data submitted successfully');
@@ -896,7 +367,6 @@ const Repair = () => {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView
         style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={100}>
         <View style={styles.formContainer}>
           <Text style={styles.heading}>Repair Data Entry</Text>
@@ -951,7 +421,7 @@ const Repair = () => {
             </View>
           )}
 
-          {selectedItem && (
+          {/* {selectedItem && (
             <View style={styles.section}>
               <Text style={styles.label}>
                 Quantity* (Max: {selectedItem.defective})
@@ -976,7 +446,7 @@ const Repair = () => {
                 <Text style={styles.errorText}>{backendErrors.quantity}</Text>
               )}
             </View>
-          )}
+          )} */}
 
           {selectedItem && !loadingMaterials && (
             <View style={styles.section}>
@@ -1016,8 +486,10 @@ const Repair = () => {
                   <Text style={styles.label}>{item?.name}</Text>
                   <View style={styles.quantityRow}>
                     <TextInput
-                      value={quantities[itemId]?.toString() || ''}
+                      value={quantities[itemId].toString()}
                       onChangeText={value => {
+                        console.log(value, quantities)
+
                         handleQuantityChange(itemId, value);
                         setBackendErrors(prev => ({...prev, [errorKey]: null}));
                       }}
@@ -1025,7 +497,7 @@ const Repair = () => {
                         styles.quantityInput,
                         backendErrors[errorKey] && styles.inputError,
                       ]}
-                      keyboardType="numeric"
+                      // keyboardType="numeric"
                       placeholder="Qty"
                     />
                     {loadingUnits ? (

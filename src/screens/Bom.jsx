@@ -39,7 +39,7 @@ const Bom = () => {
     setError(null);
     try {
       const response = await fetch(
-        `http://88.222.214.93:5050/admin/getItemsByName?searchQuery=${itemName}`,
+        `http://88.222.214.93:5000/admin/getItemsByName?searchQuery=${itemName}`,
       );
       const data = await response.json();
       setItemData(data.data || []);
@@ -53,7 +53,7 @@ const Bom = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `http://88.222.214.93:5050/admin/getRawMaterialsByItemId?itemId=${itemId}`,
+        `http://88.222.214.93:5000/admin/getRawMaterialsByItemId?itemId=${itemId}`,
       );
       const data = await response.json();
       setRawMaterials(data.data || []);
