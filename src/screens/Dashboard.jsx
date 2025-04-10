@@ -95,6 +95,7 @@ const Dashboard = ({navigation}) => {
       onPress: () => navigation.navigate('BarCodeScanner'),
     },
 
+
   ];
 
   return (
