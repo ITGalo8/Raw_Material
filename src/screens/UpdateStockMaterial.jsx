@@ -10,8 +10,8 @@ import {
 } from 'react-native';
 import axios from 'axios';
 
-const UpdateStockMaterial = ({ route }) => {
-  const { itemName, rawMaterialId, userId, currentStock } = route.params;
+const UpdateStockMaterial = ({route}) => {
+  const {itemName, rawMaterialId, userId, currentStock} = route.params;
   const [quantity, setQuantity] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -20,38 +20,34 @@ const UpdateStockMaterial = ({ route }) => {
       Alert.alert('Error', 'Please enter a quantity');
       return;
     }
-  
+
     const quantityValue = parseInt(quantity);
     if (isNaN(quantityValue)) {
       Alert.alert('Error', 'Quantity must be a number');
       return;
     }
-  
+
     if (quantityValue <= 0) {
       Alert.alert('Error', 'Quantity must be greater than 0');
       return;
     }
-  
     const itemData = {
       rawMaterialId,
       userId,
       quantity: quantityValue,
-      type: "IN"
+      type: 'IN',
     };
-  
     setLoading(true);
-  
     try {
       const response = await axios.post(
-        'http://88.222.214.93:5000/admin/updateRawMaterialStock',
+        'http://88.222.214.93:5050/admin/updateRawMaterialStock',
         itemData, // Send the object directly, not wrapped in an array
         {
           headers: {
             'Content-Type': 'application/json',
           },
-        }
+        },
       );
-  
       console.log('Response:', response.data);
       Alert.alert('Success', 'Stock added successfully!');
       setQuantity('');
@@ -61,7 +57,7 @@ const UpdateStockMaterial = ({ route }) => {
         console.log('Error response data:', error.response.data);
         Alert.alert(
           'Error',
-          error.response.data.message || 'Failed to update stock'
+          error.response.data.message || 'Failed to update stock',
         );
       } else {
         Alert.alert('Error', 'Network error. Please try again.');
@@ -74,7 +70,7 @@ const UpdateStockMaterial = ({ route }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Add Stock: {itemName}</Text>
-      
+
       <Text style={styles.label}>Current Stock: {currentStock}</Text>
 
       <Text style={styles.label}>Quantity to Add:</Text>
@@ -86,11 +82,10 @@ const UpdateStockMaterial = ({ route }) => {
         placeholder="Enter quantity to add"
       />
 
-      <TouchableOpacity 
-        style={styles.button} 
+      <TouchableOpacity
+        style={styles.button}
         onPress={handleSubmit}
-        disabled={loading}
-      >
+        disabled={loading}>
         {loading ? (
           <ActivityIndicator color="#ffffff" />
         ) : (
@@ -113,7 +108,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     color: '#333',
     textAlign: 'center',
-    paddingTop: 50
+    paddingTop: 50,
   },
   label: {
     marginVertical: 8,

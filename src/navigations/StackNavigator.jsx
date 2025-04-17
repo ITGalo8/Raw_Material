@@ -16,6 +16,8 @@ import RepairHistory from '../screens/RepairHistory';
 import RejectHistory from '../screens/RejectHistory';
 import BarCodeScanner from '../screens/BarCodeScanner';
 import UpdateBomName from '../screens/UpdateBomName';
+import productCount from '../screens/productCount';
+import NewMakingItem from '../screens/NewMakingItem';
 
 
 
@@ -117,6 +119,18 @@ const StackNavigator = () => {
         name="UpdateBomName"
         component={UpdateBomName}
         options={{title: 'UpdateBomName', headerShown: false}}
+      />
+
+      <Stack.Screen
+        name="productCount"
+        component={productCount}
+        options={{title: 'productCount', headerShown: false}}
+      />
+
+      <Stack.Screen
+        name="NewMakingItem"
+        component={NewMakingItem}
+        options={{title: 'NewMakingItem', headerShown: false}}
       />
 
      

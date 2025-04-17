@@ -34,7 +34,7 @@ const Stock = () => {
       const storedUserId = await AsyncStorage.getItem('userId');
       setUserId(storedUserId);
       
-      const response = await axios.get('http://88.222.214.93:5000/admin/showRawMaterials', {
+      const response = await axios.get('http://88.222.214.93:5050/admin/showRawMaterials', {
         headers: {
           'Authorization': `Bearer ${await AsyncStorage.getItem('authToken')}`
         }

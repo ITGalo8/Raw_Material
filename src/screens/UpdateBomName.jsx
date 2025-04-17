@@ -15,13 +15,8 @@ const UpdateBomName = ({route, navigation}) => {
     }
 
     try {
-      console.log("Update itemId", itemId)
-      console.log("Update rawMaterialId", rawMaterialId)
-      console.log("Update name", name)
-      console.log("Update quantity", quantity)
-      
       const response = await axios.put(
-        'http://88.222.214.93:5000/admin/updateItemRawMaterial',
+        'http://88.222.214.93:5050/admin/updateItemRawMaterial',
         {
           itemId,
           rawMaterialId,

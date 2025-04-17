@@ -36,8 +36,8 @@ const Dashboard = ({navigation}) => {
     fetchData();
   }, []);
 
-  const handleMoreInfo = (itemType) => {
-    navigation.navigate('AllDefectiveData', { itemType });
+  const handleMoreInfo = itemType => {
+    navigation.navigate('AllDefectiveData', {itemType});
   };
 
   if (loading) {
@@ -47,7 +47,6 @@ const Dashboard = ({navigation}) => {
   }
 
   const menuItems = [
-
     {
       icon: <MaterialIcons name="store" size={20} color="black" />,
       title: 'Bom Stock',
@@ -95,7 +94,17 @@ const Dashboard = ({navigation}) => {
       onPress: () => navigation.navigate('BarCodeScanner'),
     },
 
+    {
+      icon: <MaterialIcons name="history-toggle-off" size={20} color="black" />,
+      title: 'product Count',
+      onPress: () => navigation.navigate('productCount'),
+    },
 
+    {
+      icon: <MaterialIcons name="history-toggle-off" size={20} color="black" />,
+      title: 'New Making Item',
+      onPress: () => navigation.navigate('NewMakingItem'),
+    },
   ];
 
   return (
@@ -116,10 +125,9 @@ const Dashboard = ({navigation}) => {
       <View style={styles.cardContainer}>
         <ScrollView showsVerticalScrollIndicator={true}>
           <View style={styles.cardWrapper}>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.moreInfoButton}
-              onPress={() => handleMoreInfo('Pump')}
-            >
+              onPress={() => handleMoreInfo('Pump')}>
               <Text style={styles.moreInfoText}>More Info</Text>
             </TouchableOpacity>
             <Card
@@ -132,12 +140,11 @@ const Dashboard = ({navigation}) => {
               }
             />
           </View>
-          
+
           <View style={styles.cardWrapper}>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.moreInfoButton}
-              onPress={() => handleMoreInfo('Controller')}
-            >
+              onPress={() => handleMoreInfo('Controller')}>
               <Text style={styles.moreInfoText}>More Info</Text>
             </TouchableOpacity>
             <Card
@@ -150,12 +157,11 @@ const Dashboard = ({navigation}) => {
               }
             />
           </View>
-          
+
           <View style={styles.cardWrapper}>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.moreInfoButton}
-              onPress={() => handleMoreInfo('Motor')}
-            >
+              onPress={() => handleMoreInfo('Motor')}>
               <Text style={styles.moreInfoText}>More Info</Text>
             </TouchableOpacity>
             <Card
