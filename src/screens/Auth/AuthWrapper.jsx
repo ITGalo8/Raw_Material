@@ -75,7 +75,7 @@ const AuthWrapper = () => {
   const verifyRefreshToken = async (token) => {
     try {
       const response = await axios.post(
-        `http://88.222.214.93:5000/auth/verify-refresh-token`,
+        `http://88.222.214.93:5050/auth/verify-refresh-token`,
         { token }
       );
       return response.data.isValid;
@@ -87,7 +87,7 @@ const AuthWrapper = () => {
   const refreshAccessToken = async (refreshToken) => {
     try {
       const response = await axios.post(
-        `http://88.222.214.93:5000/auth/refresh-token`,
+        `http://88.222.214.93:5050/auth/refresh-token`,
         { refreshToken }
       );
       return {

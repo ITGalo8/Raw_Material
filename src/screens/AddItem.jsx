@@ -35,7 +35,7 @@ const AddItem = () => {
 
     setLoading(true);
     try {
-      const response = await axios.post('http://88.222.214.93:5000/admin/addItem', {
+      const response = await axios.post('http://88.222.214.93:5050/admin/addItem', {
         name: name.trim(),
         type: selectedItemType
       });
@@ -142,9 +142,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 10,
   },
-  disabledButton: {
-    backgroundColor: '#cccccc',
-  },
+  // disabledButton: {
+  //   backgroundColor: '#cccccc',
+  // },
   buttonText: {
     color: '#ffffff',
     fontSize: 16,

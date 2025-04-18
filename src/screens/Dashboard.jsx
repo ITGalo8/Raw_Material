@@ -23,7 +23,7 @@ const Dashboard = ({navigation}) => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          'http://88.222.214.93:5000/admin/showDefectiveItemsOfWarehouse',
+          'http://88.222.214.93:5050/admin/showDefectiveItemsOfWarehouse',
         );
         setData(response.data.data);
       } catch (error) {
@@ -88,21 +88,21 @@ const Dashboard = ({navigation}) => {
       onPress: () => navigation.navigate('RejectHistory'),
     },
 
-    {
-      icon: <MaterialIcons name="history-toggle-off" size={20} color="black" />,
-      title: 'BarCode Scanner',
-      onPress: () => navigation.navigate('BarCodeScanner'),
-    },
+    // {
+    //   icon: <MaterialIcons name="history-toggle-off" size={20} color="black" />,
+    //   title: 'BarCode Scanner',
+    //   onPress: () => navigation.navigate('BarCodeScanner'),
+    // },
 
     {
-      icon: <MaterialIcons name="history-toggle-off" size={20} color="black" />,
+      icon: <MaterialIcons name="account-box" size={20} color="black" />,
       title: 'product Count',
       onPress: () => navigation.navigate('productCount'),
     },
 
     {
-      icon: <MaterialIcons name="history-toggle-off" size={20} color="black" />,
-      title: 'New Making Item',
+      icon: <MaterialIcons name="production-quantity-limits" size={20} color="black" />,
+      title: 'New Making Product',
       onPress: () => navigation.navigate('NewMakingItem'),
     },
   ];

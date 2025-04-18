@@ -41,7 +41,7 @@ const UpdateStockMaterial = ({route}) => {
     try {
       const response = await axios.post(
         'http://88.222.214.93:5050/admin/updateRawMaterialStock',
-        itemData, // Send the object directly, not wrapped in an array
+        itemData,
         {
           headers: {
             'Content-Type': 'application/json',

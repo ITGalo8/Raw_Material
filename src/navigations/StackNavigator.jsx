@@ -18,6 +18,7 @@ import BarCodeScanner from '../screens/BarCodeScanner';
 import UpdateBomName from '../screens/UpdateBomName';
 import productCount from '../screens/productCount';
 import NewMakingItem from '../screens/NewMakingItem';
+import InsufficientRawMaterials from '../screens/InsufficientRawMaterials';
 
 
 
@@ -133,7 +134,12 @@ const StackNavigator = () => {
         options={{title: 'NewMakingItem', headerShown: false}}
       />
 
-     
+      <Stack.Screen
+        name="InsufficientRawMaterials"
+        component={InsufficientRawMaterials}
+        options={{title: 'InsufficientRawMaterials', headerShown: false}}
+      />
+
     </Stack.Navigator>
   );
 };

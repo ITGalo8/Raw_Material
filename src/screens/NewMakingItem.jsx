@@ -5,12 +5,14 @@ import {
   Dimensions,
   ActivityIndicator,
   Alert,
+  TextInput,
   TouchableOpacity,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import RNPickerSelect from 'react-native-picker-select';
 import axios from 'axios';
 import {useNavigation} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const {width, height} = Dimensions.get('window');
 
@@ -24,6 +26,7 @@ const NewMakingItem = () => {
   const [items, setItems] = useState([]);
   const [defectiveItems, setDefectiveItems] = useState([]);
   const [selectedDefectiveItem, setSelectedDefectiveItem] = useState(null);
+  const [quantityProduced, setQuantityProduced] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -31,6 +34,7 @@ const NewMakingItem = () => {
     {label: 'Motor', value: 'Motor'},
     {label: 'Pump', value: 'Pump'},
     {label: 'Controller', value: 'Controller'},
+    {label: 'Laptop', value: 'Laptop'},
   ];
 
   useEffect(() => {
@@ -48,6 +52,7 @@ const NewMakingItem = () => {
     setDefectiveItems([]);
     setSelectedDefectiveItem(null);
     setSelectedDefectiveItemName('');
+    setQuantityProduced('');
   };
 
   const fetchItems = async itemName => {
@@ -55,24 +60,26 @@ const NewMakingItem = () => {
     setError(null);
     try {
       const response = await axios.get(
-        `http://88.222.214.93:5000/admin/getItemsByName?searchQuery=${itemName}`,
+        `http://88.222.214.93:5050/admin/getItemsByName?searchQuery=${itemName}`,
       );
       setItems(response.data.data || []);
     } catch (err) {
       setError('Failed to fetch items');
-      console.log('Error fetching items:', err);
+      Alert.alert('Error producing item:', err?.response?.data?.message);
+      console.log('Error producing item:', err?.response?.data?.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchDefectiveItems = async (itemType, itemName) => {
+  const fetchDefectiveItems = async (itemType, subItem) => {
     setLoading(true);
     setError(null);
     try {
       const response = await axios.get(
-        `http://88.222.214.93:5000/admin/showDefectiveItemsList?itemName=${itemName}`,
+        `http://88.222.214.93:5050/admin/showDefectiveItemsList?itemName=${subItem}`,
       );
+
       if (response.data.success) {
         setDefectiveItems(response.data.data || []);
       } else {
@@ -80,23 +87,59 @@ const NewMakingItem = () => {
       }
     } catch (err) {
       setError('Failed to fetch defective items');
-      console.log('Error fetching defective items:', err);
+      Alert.alert('Error producing item:', error?.response?.data?.message);
+      console.log('Error producing item:', error?.response?.data?.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleProceed = () => {
+  const handleProceed = async () => {
     if (!selectedDefectiveItem) {
       Alert.alert('Error', 'Please select a defective item to proceed');
       return;
     }
+    if (
+      !quantityProduced ||
+      isNaN(quantityProduced) ||
+      Number(quantityProduced) <= 0
+    ) {
+      Alert.alert('Error', 'Please enter a valid quantity produced');
+      return;
+    }
 
-    navigation.navigate('RepairProcess', {
-      itemId: selectedDefectiveItem,
-      itemName: selectedItemName,
-      defectiveItemName: selectedDefectiveItemName,
-    });
+    try {
+      setLoading(true);
+      const userId = await AsyncStorage.getItem('userId');
+
+      const payload = {
+        itemId: selectedItem,
+        subItem: selectedDefectiveItemName,
+        quantityProduced: Number(quantityProduced),
+        userId: userId,
+      };
+
+      console.log("PlAYLOAD DATA",payload )
+
+      const response = await axios.post(
+        'http://88.222.214.93:5050/admin/produceNewItem',
+        payload
+      );
+
+      console.log("response data", response.data)
+
+      if (response.data.success) {
+        Alert.alert('Success', 'New item produced successfully!');
+        resetSelections();
+      } else {
+        Alert.alert('Failed', response.data.message);
+      }
+    } catch (error) {
+      Alert.alert('Error producing item:', error?.response?.data?.message)
+      console.log('Error producing item:', error?.response?.data?.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -115,7 +158,6 @@ const NewMakingItem = () => {
           value={selectedItemType}
         />
       </View>
-
       {loading && <ActivityIndicator size="large" color="#0000ff" />}
       {error && <Text style={styles.errorText}>{error}</Text>}
 
@@ -151,7 +193,7 @@ const NewMakingItem = () => {
                 setSelectedDefectiveItemName(selected?.itemName || '');
               }}
               items={defectiveItems.map(item => ({
-                label: `${item.itemName} (Defective: ${item.defective})`,
+                label: item.itemName,
                 value: item._id,
               }))}
               placeholder={{label: 'Select a defective item...', value: null}}
@@ -159,18 +201,21 @@ const NewMakingItem = () => {
               value={selectedDefectiveItem}
             />
           </View>
-
-          <View style={styles.infoContainer}>
-            <Text style={styles.infoText}>Selected: {selectedItemName}</Text>
-          </View>
-
+          <TextInput
+            style={styles.input}
+            placeholder="Enter quantity produced"
+            keyboardType="numeric"
+            value={quantityProduced}
+            onChangeText={setQuantityProduced}
+          />
           <TouchableOpacity
             style={[
               styles.proceedButton,
-              !selectedDefectiveItem && styles.disabledButton,
+              (!selectedDefectiveItem || !quantityProduced) &&
+                styles.disabledButton,
             ]}
             onPress={handleProceed}
-            disabled={!selectedDefectiveItem}>
+            disabled={!selectedDefectiveItem || !quantityProduced}>
             <Text style={styles.proceedButtonText}>Proceed to Repair</Text>
           </TouchableOpacity>
         </>
@@ -200,17 +245,26 @@ const styles = StyleSheet.create({
     elevation: 5,
     marginBottom: 10,
   },
+  input: {
+    width: width * 0.8,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 15,
+    elevation: 5,
+    fontSize: 16,
+    marginBottom: 10,
+  },
   proceedButton: {
-    backgroundColor: '#007bff',
+    backgroundColor: '#000',
     padding: 15,
     borderRadius: 10,
     width: width * 0.8,
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 10,
   },
-  disabledButton: {
-    backgroundColor: '#cccccc',
-  },
+  // disabledButton: {
+  //   backgroundColor: '#cccccc',
+  // },
   proceedButtonText: {
     color: 'white',
     fontSize: 16,
@@ -220,17 +274,6 @@ const styles = StyleSheet.create({
     color: 'red',
     marginTop: 10,
     textAlign: 'center',
-  },
-  infoContainer: {
-    width: width * 0.8,
-    backgroundColor: '#e9f7ef',
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 10,
-  },
-  infoText: {
-    color: '#28a745',
-    fontSize: 14,
   },
 });
 
@@ -254,5 +297,3 @@ const pickerSelectStyles = {
 };
 
 export default NewMakingItem;
-
-
