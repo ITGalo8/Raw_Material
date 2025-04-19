@@ -73,7 +73,7 @@ const Repair = () => {
       setLoadingUnits(true);
       try {
         const response = await axios.get(
-          'http://88.222.214.93:5050/admin/showUnit',
+          'http://88.222.214.93:5000/admin/showUnit',
         );
         if (response.data.success) {
           setUnits(response.data.data);
@@ -109,7 +109,7 @@ const Repair = () => {
       setBackendErrors(prev => ({...prev, materials: null}));
       try {
         const response = await axios.get(
-          `http://88.222.214.93:5050/admin/getItemRawMaterials?subItem=${encodeURIComponent(
+          `http://88.222.214.93:5000/admin/getItemRawMaterials?subItem=${encodeURIComponent(
             selectedItem.itemName,
           )}`,
         );
@@ -153,7 +153,7 @@ const Repair = () => {
     setBackendErrors(prev => ({...prev, items: null}));
     try {
       const response = await axios.get(
-        `http://88.222.214.93:5050/admin/showDefectiveItemsList?itemName=${itemType}`,
+        `http://88.222.214.93:5000/admin/showDefectiveItemsList?itemName=${itemType}`,
       );
       if (response.data && response.data.data) {
         setItemList(response.data.data);
@@ -311,7 +311,7 @@ const Repair = () => {
     try {
       setSubmitting(true);
       const response = await axios.post(
-        'http://88.222.214.93:5050/admin/addServiceRecord',
+        'http://88.222.214.93:5000/admin/addServiceRecord',
         repairData,
       );
 

@@ -34,7 +34,7 @@ const NewMakingItem = () => {
     {label: 'Motor', value: 'Motor'},
     {label: 'Pump', value: 'Pump'},
     {label: 'Controller', value: 'Controller'},
-    {label: 'Laptop', value: 'Laptop'},
+    // {label: 'Laptop', value: 'Laptop'},
   ];
 
   useEffect(() => {
@@ -60,7 +60,7 @@ const NewMakingItem = () => {
     setError(null);
     try {
       const response = await axios.get(
-        `http://88.222.214.93:5050/admin/getItemsByName?searchQuery=${itemName}`,
+        `http://88.222.214.93:5000/admin/getItemsByName?searchQuery=${itemName}`,
       );
       setItems(response.data.data || []);
     } catch (err) {
@@ -77,7 +77,7 @@ const NewMakingItem = () => {
     setError(null);
     try {
       const response = await axios.get(
-        `http://88.222.214.93:5050/admin/showDefectiveItemsList?itemName=${subItem}`,
+        `http://88.222.214.93:5000/admin/showDefectiveItemsList?itemName=${subItem}`,
       );
 
       if (response.data.success) {
@@ -122,7 +122,7 @@ const NewMakingItem = () => {
       console.log("PlAYLOAD DATA",payload )
 
       const response = await axios.post(
-        'http://88.222.214.93:5050/admin/produceNewItem',
+        'http://88.222.214.93:5000/admin/produceNewItem',
         payload
       );
 

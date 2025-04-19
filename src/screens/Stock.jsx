@@ -34,7 +34,7 @@ const Stock = () => {
       const storedUserId = await AsyncStorage.getItem('userId');
       setUserId(storedUserId);
       
-      const response = await axios.get('http://88.222.214.93:5050/admin/showRawMaterials', {
+      const response = await axios.get('http://88.222.214.93:5000/admin/showRawMaterials', {
         headers: {
           'Authorization': `Bearer ${await AsyncStorage.getItem('authToken')}`
         }
@@ -105,12 +105,22 @@ const Stock = () => {
     <TouchableOpacity onPress={() => handleItemPress(item)}>
       <View style={[
         styles.card,
-        item.stock <= (item.threshold || 0) ? styles.lowStockCard : null
+        item.stockIsLow ? styles.lowStockCard : null
       ]}>
         <View style={styles.cardHeader}>
-          <Text style={styles.name}>{item.name}</Text>
+          <View style={styles.nameContainer}>
+            {item.stockIsLow && (
+              <View style={styles.lowStockIndicator} />
+            )}
+            <Text style={styles.name}>{item.name}</Text>
+          </View>
           <View style={styles.stockInfo}>
-            <Text style={styles.stock}>{item.stock} {item.unit || ''}</Text>
+            <Text style={[
+              styles.stock,
+              item.stockIsLow ? styles.lowStockText : null
+            ]}>
+              {item.stock} {item.unit || ''}
+            </Text>
             <MaterialIcons name="chevron-right" size={24} color="#7f8c8d" />
           </View>
         </View>
@@ -140,7 +150,7 @@ const Stock = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        <Text style={styles.header}>Raw Material Inventory</Text>
+        <Text style={styles.header}>Raw Material</Text>
         
         <View style={styles.searchContainer}>
           <MaterialIcons name="search" size={20} color="#7f8c8d" style={styles.searchIcon} />
@@ -240,9 +250,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#2c3e50',
     marginVertical: windowHeight * 0.02,
-    // marginTop: windowHeight * 0.03,
-    marginLeft: windowWidth * 0.02,
     marginTop: 70,
+    textAlign: 'center'
   },
   searchContainer: {
     flexDirection: 'row',
@@ -297,6 +306,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 5,
   },
+  nameContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  lowStockIndicator: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: '#e74c3c',
+    marginRight: 8,
+  },
   name: {
     fontSize: windowWidth * 0.045,
     fontWeight: '600',
@@ -311,6 +332,10 @@ const styles = StyleSheet.create({
     fontSize: windowWidth * 0.038,
     color: '#3498db',
     marginRight: 5,
+  },
+  lowStockText: {
+    color: '#e74c3c',
+    fontWeight: 'bold',
   },
   thresholdContainer: {
     flexDirection: 'row',

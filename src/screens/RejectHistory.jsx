@@ -22,7 +22,7 @@ const RepairHistory = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `http://88.222.214.93:5050/admin/getRejectedServiceRecords`,
+        `http://88.222.214.93:5000/admin/getRejectedServiceRecords`,
       );
       console.log('API Response:', response.data.data);
       setOrders(response.data.data || []);

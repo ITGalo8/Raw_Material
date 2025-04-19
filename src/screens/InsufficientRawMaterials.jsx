@@ -21,7 +21,7 @@ const InsufficientRawMaterials = ({route}) => {
     const fetchInsufficientMaterials = async () => {
       try {
         const response = await axios.get(
-          `http://88.222.214.93:5050/admin/getInsufficientRawMaterials?itemId=${itemId}`,
+          `http://88.222.214.93:5000/admin/getInsufficientRawMaterials?itemId=${itemId}`,
         );
         setItem(response.data.item);
         setInsufficientMaterials(response.data.insufficientMaterials);

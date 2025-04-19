@@ -40,7 +40,7 @@ const UpdateStockMaterial = ({route}) => {
     setLoading(true);
     try {
       const response = await axios.post(
-        'http://88.222.214.93:5050/admin/updateRawMaterialStock',
+        'http://88.222.214.93:5000/admin/updateRawMaterialStock',
         itemData,
         {
           headers: {

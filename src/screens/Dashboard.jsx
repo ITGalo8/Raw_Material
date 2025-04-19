@@ -23,7 +23,7 @@ const Dashboard = ({navigation}) => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          'http://88.222.214.93:5050/admin/showDefectiveItemsOfWarehouse',
+          'http://88.222.214.93:5000/admin/showDefectiveItemsOfWarehouse',
         );
         setData(response.data.data);
       } catch (error) {

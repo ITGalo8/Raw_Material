@@ -9,7 +9,7 @@ const Logout = ({onLogout}) => {
 
   const handleLogout = async () => {
     try {
-      await axios.post('http://88.222.214.93:5050/auth/logout');
+      await axios.post('http://88.222.214.93:5000/auth/logout');
       Alert.alert('Logout Successful', 'You have been logged out.');
       navigation.navigate('LoginScreen');
       if (onLogout) {

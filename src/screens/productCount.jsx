@@ -30,7 +30,7 @@ const ProductCount = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          'http://88.222.214.93:5050/admin/getItemsProducibleCount'
+          'http://88.222.214.93:5000/admin/getItemsProducibleCount'
         );
         setData(response.data.results);
         setFilteredData(response.data.results);
