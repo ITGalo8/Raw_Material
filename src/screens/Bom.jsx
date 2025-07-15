@@ -47,7 +47,7 @@ const Bom = () => {
     setError(null);
     try {
       const response = await axios.get(
-        `http://88.222.214.93:5000/admin/getItemsByName?searchQuery=${itemName}`,
+        `http://192.168.1.26:5000/admin/getItemsByName?searchQuery=${itemName}`,
       );
       setItems(response.data.data || []);
     } catch (err) {
@@ -68,7 +68,7 @@ const Bom = () => {
     setError(null);
     try {
       const response = await axios.get(
-        `http://88.222.214.93:5000/admin/getRawMaterialsByItemId?itemId=${itemId}`,
+        `http://192.168.1.26:5000/admin/getRawMaterialsByItemId?itemId=${itemId}`,
       );
 
       const processedMaterials = (response.data.data || []).map(item => ({

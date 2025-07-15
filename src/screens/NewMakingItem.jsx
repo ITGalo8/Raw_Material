@@ -122,7 +122,7 @@ const NewMakingItem = () => {
       console.log("PlAYLOAD DATA",payload )
 
       const response = await axios.post(
-        'http://88.222.214.93:5000/admin/produceNewItem',
+        'http://88.222.214.93:5000:5000/admin/produceNewItem',
         payload
       );
 

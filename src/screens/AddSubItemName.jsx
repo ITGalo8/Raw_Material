@@ -17,7 +17,7 @@ const scale = width / 375;
 
 const AddSubItemName = () => {
   const [rawMaterialName, setRawMaterialName] = useState('');
-  const [selectedUnitName, setSelectedUnitName] = useState(null); // Changed to store name
+  const [selectedUnitName, setSelectedUnitName] = useState(null);
   const [loading, setLoading] = useState(false);
   const [unit, setUnit] = useState([]);
   const [fetching, setFetching] = useState(true);

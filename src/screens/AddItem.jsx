@@ -33,6 +33,7 @@ const AddItem = () => {
       return;
     }
 
+    // 192.168.1.26
     setLoading(true);
     try {
       const response = await axios.post('http://88.222.214.93:5000/admin/addItem', {

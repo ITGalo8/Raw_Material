@@ -33,6 +33,8 @@ const LoginScreen = () => {
         },
       );
 
+      console.log('Login response:', response.data);
+
       const userData = response.data.data;
 
       await AsyncStorage.setItem('userData', JSON.stringify(userData));
